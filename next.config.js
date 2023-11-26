@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-  },
+  transpilePackages:["jotai-devtools"]
 };
 
 module.exports = nextConfig;

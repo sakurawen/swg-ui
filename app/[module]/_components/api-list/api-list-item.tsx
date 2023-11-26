@@ -1,68 +1,151 @@
 'use client';
 import { CustomOperationObject } from '@/app/typing';
-import cx from 'clsx';
-import { groupBy } from 'lodash';
-import { ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
+import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/use-toast';
+import { Icon } from '@iconify/react';
+import { copy } from 'clipboard';
+import { sortBy } from 'lodash';
+import { useParams } from 'next/navigation';
 import { OpenAPIV2 } from 'openapi-types';
-import { useMemo, useState } from 'react';
-import { Badge } from '../badge';
+import { useMemo } from 'react';
 import { Params } from './params';
+import { APIProperty, RefProperty } from './typing';
 
-type ApiListItemProps = {
+
+export type APIListItemProps = {
   data: CustomOperationObject;
+  definitions: OpenAPIV2.Document['definitions'];
 };
 
-export function APIListItem({ data }: ApiListItemProps) {
-  const [open, setOpen] = useState(false);
-
-  const parameters = useMemo<{
-    query?: OpenAPIV2.Parameters;
-    path?: OpenAPIV2.Parameters;
-    body?: OpenAPIV2.Parameters;
-  }>(() => {
-    return groupBy(data.parameters, 'in');
-  }, [data.parameters]);
-
-  function handleOpenOperation(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    setOpen((o) => !o);
-    console.log('params:', groupBy(data.parameters, 'in'));
+function buildRefProperty(ref: OpenAPIV2.SchemaObject, definitions: OpenAPIV2.DefinitionsObject): RefProperty {
+  if (ref.properties) {
+    Object.values(ref.properties).forEach((refProperty) => {
+      if (refProperty.properties) {
+        buildRefProperty(refProperty, definitions);
+      }
+      if (refProperty.$ref && refProperty.originalRef) {
+        refProperty.ref = definitions[refProperty.originalRef];
+        refProperty.propertiesList = Object.values(ref.properties || {});
+      }
+    });
   }
+  return ref;
+}
+
+function buildApiProperty(parameter: OpenAPIV2.Parameters[number], definitions: OpenAPIV2.DefinitionsObject) {
+  if (!('name' in parameter)) return undefined;
+  const apiProperty: APIProperty = { ...parameter };
+  if (parameter?.schema?.originalRef && parameter?.schema.$ref) {
+    const ref = buildRefProperty(definitions[parameter?.schema?.originalRef], definitions);
+    apiProperty.ref = ref;
+  }
+  return apiProperty;
+}
+
+function buildApiProperties(
+  parameters?: OpenAPIV2.Parameters | undefined,
+  definitions?: OpenAPIV2.DefinitionsObject
+): APIProperty[] {
+  if (!parameters || !definitions) return [];
+  const apiProperties: APIProperty[] = [];
+  parameters.forEach((parameter) => {
+    if (!('name' in parameter)) return;
+    const apiProperty = buildApiProperty(parameter, definitions);
+    if (apiProperty) {
+      apiProperties.push(apiProperty);
+    }
+  });
+  return apiProperties;
+}
+
+export function APIListItem({ data, definitions }: APIListItemProps) {
+  const { module } = useParams<{ module: string }>();
+  const { toast } = useToast();
+
+  const parameters = useMemo<APIProperty[]>(() => {
+    const build = buildApiProperties(data.parameters, definitions);
+    return sortBy(build, 'in');
+  }, [data.parameters, definitions]);
+
+  function handleCopyURL() {
+    try {
+      const copyPath = `\`/${module}${data.path.replace('{organizationId}', '${getCurrentOrganizationId()}')}\``;
+      copy(copyPath);
+      toast({
+        title: '可以的，复制成功了',
+        description: '检查下剪贴板吧。',
+      });
+    } catch {
+      toast({
+        title: '复制失败了',
+        description: '也许有点兼容性问题。',
+        variant: 'destructive',
+      });
+    }
+  }
+
+  function handleGenerateDTS(e: React.MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    console.log(parameters);
+  }
+
   return (
-    <div
-      className={cx(
-        'py-2 px-2.5 hover:bg-[var(--accent-a3)] rounded-md ring-1 mb-1 ring-inset ring-transparent hover:ring-[var(--accent-a4)]',
-        {
-          '!ring-[var(--accent-a4)] bg-[var(--accent-a3)] ': open,
-        }
-      )}>
-      <div
-        className='flex items-center justify-between'
-        onClick={handleOpenOperation}>
-        <div>
-          <h2>
-            <Badge type={data.method} />
-            <span onClick={(e) => open && e.stopPropagation()}>{data.summary}</span>
-          </h2>
-          <p
-            className='pl-1 pt-0.5'
-            onClick={(e) => open && e.stopPropagation()}>
-            {data.path}
-          </p>
+    <AccordionItem value={data.operationId || ''}>
+      <AccordionTrigger className='px-2'>
+        <h2 className=''>
+          <span className='inline-block  text-left'>
+            <Badge
+              className='mr-2 uppercase'
+              variant='outline'>
+              {data.method}
+            </Badge>
+          </span>
+          <span>{data.summary} </span>
+          <span> {data.path}</span>
+        </h2>
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className=' bg-white  text-left ring-gray-200/60'>
+          <div className='flex pl-1 py-1 mb-2'>
+            <Button
+              variant='link'
+              size='sm'
+              onClick={handleCopyURL}>
+              <Icon
+                className='w-5 h-5 mr-1'
+                icon='material-symbols:attachment'
+              />
+              复制链接
+            </Button>
+            <Dialog>
+              <DialogTrigger onClick={handleGenerateDTS}>
+                <Button
+                  variant='link'
+                  size='sm'>
+                  <Icon
+                    className='w-5 h-5 mr-1'
+                    icon='mdi:language-typescript'
+                  />
+                  获取 Response DTS
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>{data.summary} DTS</DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <div className='space-y-8'>
+            <Params
+              title='Request Parameters'
+              data={parameters}
+            />
+          </div>
         </div>
-        <i className='text-gray-400 hover:text-gray-950 text-sm p-1'>
-          {open ? <ChevronsDownUp className='w-4 h-4' /> : <ChevronsUpDown className='w-4 h-4' />}
-        </i>
-      </div>
-      {open ? (
-        <div className='mt-2 bg-white p-2 ring-1 text-left ring-gray-200/50 rounded-md'>
-          <Params
-            title='Parameters'
-            data={parameters}
-          />
-        </div>
-      ) : null}
-    </div>
+      </AccordionContent>
+    </AccordionItem>
   );
 }

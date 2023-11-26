@@ -1,5 +1,5 @@
-import { Loading } from '@/app/_components/Loading';
-import { Navbar } from '@/app/_components/Navbar';
+import { Loading } from '@/app/_components/loading';
+import { Navbar } from '@/app/_components/navbar';
 import { SwaggerResource } from '@/app/typing';
 import { notFound } from 'next/navigation';
 import { PropsWithChildren, Suspense } from 'react';

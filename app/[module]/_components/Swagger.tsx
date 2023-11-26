@@ -62,7 +62,7 @@ export function Swagger(props: SwaggerProps) {
   const [tag, setTag] = useState<OpenAPIV2.TagObject>();
 
   const { data: document } = useSWR(path, fetchSwaggerModuleData, { suspense: true, fallbackData: null });
-
+  document?.definitions
   return document ? (
     <div className='flex overflow-hidden'>
       <Sidebar
@@ -70,11 +70,10 @@ export function Swagger(props: SwaggerProps) {
         selectTagName={tag?.name}
         onTagChange={setTag}
       />
-      <div
-        className='flex-1 h-full px-1 py-1.5'
-        style={{ height: 'calc(100vh - 64px)' }}>
+      <div className='flex-1 h-full px-1'>
         <APIList
           tags={document?.tags}
+          definitions={document.definitions}
           tag={tag}
         />
       </div>

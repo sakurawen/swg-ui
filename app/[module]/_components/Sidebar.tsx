@@ -1,8 +1,7 @@
 'use client';
-import { ScrollArea } from '@radix-ui/themes';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import cx from 'clsx';
 import { OpenAPI, OpenAPIV2 } from 'openapi-types';
-
 type SidebarProps = {
   tags: OpenAPI.Document['tags'];
   selectTagName: string | undefined;
@@ -11,10 +10,8 @@ type SidebarProps = {
 
 export function Sidebar({ tags, onTagChange, selectTagName }: SidebarProps) {
   return (
-    <menu
-      className='border-r border-gray-100 px-1 pt-1 flex-shrink-0'
-      style={{ height: 'calc(100vh - 64px)' }}>
-      <ScrollArea scrollbars='vertical'>
+    <menu className='px-1 flex-shrink-0'>
+      <ScrollArea className='h-[calc(100vh-64px)] pt-2 pb-1'>
         <ul>
           {tags?.map((tag) => {
             return (
@@ -24,15 +21,14 @@ export function Sidebar({ tags, onTagChange, selectTagName }: SidebarProps) {
                 onClick={() => onTagChange?.(tag)}>
                 <div
                   className={cx(
-                    'text-base select-none py-2 hover:bg-[var(--accent-a3)] hover:text-[var(--accent-12)] rounded-md px-2.5',
+                    'transition-all text-base select-none py-2 hover:bg-slate-100 text-slate-700 hover:text-slate-950 rounded-sm px-2.5',
                     {
-                      'bg-[var(--accent-a3)] text-[var(--accent-12)] ring-1 ring-[var(--accent-a4)] ring-inset':
-                        tag.name === selectTagName,
+                      '!text-white !bg-slate-900': tag.name === selectTagName,
                     }
                   )}>
-                  <span>{tag.name}</span>
+                  <span className='font-normal'>{tag.description}</span>
                   <br />
-                  <span className='text-sm font-normal'>{tag.description}</span>
+                  <span className='text-xs'>{tag.name}</span>
                 </div>
               </li>
             );
