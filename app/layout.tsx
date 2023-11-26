@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { NextThemeProvider } from '@/app/_components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'SSSSWG',
@@ -42,7 +43,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang='en'>
       <body className={cx(harmonySans.className, 'min-h-screen')}>
         <JotaiProvider>
-          {children}
+          <NextThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange>
+            {children}
+          </NextThemeProvider>
           <Toaster />
         </JotaiProvider>
       </body>

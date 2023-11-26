@@ -21,9 +21,10 @@ export function Sidebar({ tags, onTagChange, selectTagName }: SidebarProps) {
                 onClick={() => onTagChange?.(tag)}>
                 <div
                   className={cx(
-                    'transition-all text-base select-none py-2 hover:bg-slate-100 text-slate-700 hover:text-slate-950 rounded-sm px-2.5',
+                    'transition-all text-base select-none py-2 hover:bg-zinc-100 text-foreground hover:text-zinc-950 rounded-sm px-2.5',
+                    'hover:bg-zinc-100 text-foreground dark:hover:bg-zinc-900 dark:hover:text-zinc-100',
                     {
-                      '!text-white !bg-slate-900': tag.name === selectTagName,
+                      '!text-background !bg-foreground ': tag.name === selectTagName,
                     }
                   )}>
                   <span className='font-normal'>{tag.description}</span>

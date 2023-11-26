@@ -14,7 +14,6 @@ import { useMemo } from 'react';
 import { Params } from './params';
 import { APIProperty, RefProperty } from './typing';
 
-
 export type APIListItemProps = {
   data: CustomOperationObject;
   definitions: OpenAPIV2.Document['definitions'];
@@ -109,7 +108,7 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
         </h2>
       </AccordionTrigger>
       <AccordionContent>
-        <div className=' bg-white  text-left ring-gray-200/60'>
+        <div className='text-left'>
           <div className='flex pl-1 py-1 mb-2'>
             <Button
               variant='link'
@@ -119,7 +118,16 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                 className='w-5 h-5 mr-1'
                 icon='material-symbols:attachment'
               />
-              复制链接
+              复制请求链接
+            </Button>
+            <Button
+              variant='link'
+              size='sm'>
+              <Icon
+                className='w-5 h-5 mr-1'
+                icon='mdi:language-typescript'
+              />
+              获取 Request DTS
             </Button>
             <Dialog>
               <DialogTrigger onClick={handleGenerateDTS}>
