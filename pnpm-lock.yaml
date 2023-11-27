@@ -95,6 +95,9 @@ dependencies:
   react-dom:
     specifier: 18.2.0
     version: 18.2.0(react@18.2.0)
+  sugar-high:
+    specifier: ^0.5.5
+    version: 0.5.5
   swr:
     specifier: ^2.2.4
     version: 2.2.4(react@18.2.0)
@@ -5711,6 +5714,10 @@ packages:
       mz: 2.7.0
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
+    dev: false
+
+  /sugar-high@0.5.5:
+    resolution: {integrity: sha512-XSLoBuGEfKk3PbN94+3aZefhoSH5n+qXTxcfFs+Ip0EdaY/fdohyyfugW0sJPrgdUfTk4DIxpPsUCq492aLOrw==}
     dev: false
 
   /superagent@7.1.6:

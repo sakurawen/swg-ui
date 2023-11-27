@@ -23,7 +23,7 @@ export function Navbar(props: NavbarProps) {
   return (
     <div className='fixed z-10 w-full h-16  backdrop-blur-sm '>
       <nav className='h-full max-w-7xl mx-auto flex justify-between items-center px-2.5 border-b'>
-        <span className='font-bold'>Swagger UI</span>
+        <span className='font-bold'>スワッガー・ユーアイ</span>
         <div className='flex items-center space-x-4'>
           <Select
             onValueChange={handleSwitchModule}

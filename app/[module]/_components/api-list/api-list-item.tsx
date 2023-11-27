@@ -11,13 +11,23 @@ import { sortBy } from 'lodash';
 import { useParams } from 'next/navigation';
 import { OpenAPIV2 } from 'openapi-types';
 import { useMemo } from 'react';
-import { Params } from './params';
+import { Property } from './params';
 import { APIProperty, RefProperty } from './typing';
+import Code from './code';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
   definitions: OpenAPIV2.Document['definitions'];
 };
+function buildPropertiesList(
+  properties: Record<string, OpenAPIV2.SchemaObject>
+): Array<{ name: string } & OpenAPIV2.SchemaObject> {
+  const result = [];
+  for (let key in properties) {
+    result.push({ name: key, ...properties[key] });
+  }
+  return result;
+}
 
 function buildRefProperty(ref: OpenAPIV2.SchemaObject, definitions: OpenAPIV2.DefinitionsObject): RefProperty {
   if (ref.properties) {
@@ -27,7 +37,7 @@ function buildRefProperty(ref: OpenAPIV2.SchemaObject, definitions: OpenAPIV2.De
       }
       if (refProperty.$ref && refProperty.originalRef) {
         refProperty.ref = definitions[refProperty.originalRef];
-        refProperty.propertiesList = Object.values(ref.properties || {});
+        refProperty.propertiesList = buildPropertiesList(ref.properties || {});
       }
     });
   }
@@ -37,9 +47,16 @@ function buildRefProperty(ref: OpenAPIV2.SchemaObject, definitions: OpenAPIV2.De
 function buildApiProperty(parameter: OpenAPIV2.Parameters[number], definitions: OpenAPIV2.DefinitionsObject) {
   if (!('name' in parameter)) return undefined;
   const apiProperty: APIProperty = { ...parameter };
-  if (parameter?.schema?.originalRef && parameter?.schema.$ref) {
-    const ref = buildRefProperty(definitions[parameter?.schema?.originalRef], definitions);
+  if (
+    (parameter?.schema?.originalRef && parameter?.schema.$ref) ||
+    (parameter.schema?.items?.originalRef && parameter.schema?.type === 'array')
+  ) {
+    const ref = buildRefProperty(
+      definitions[parameter?.schema?.originalRef ?? parameter.schema?.items?.originalRef],
+      definitions
+    );
     apiProperty.ref = ref;
+    apiProperty.propertiesList = buildPropertiesList(ref.properties || {});
   }
   return apiProperty;
 }
@@ -87,8 +104,8 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
   }
 
   function handleGenerateDTS(e: React.MouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
+    // e.stopPropagation();
+    // e.preventDefault();
     console.log(parameters);
   }
 
@@ -143,11 +160,24 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>{data.summary} DTS</DialogHeader>
+                <Code code={`
+interface Person{
+  age:number
+  name:string
+}
+type Props = {
+  giao:number,
+  home:Person
+}
+export default function G(){
+  return <div>wuhu</div>
+}
+                `}/>
               </DialogContent>
             </Dialog>
           </div>
           <div className='space-y-8'>
-            <Params
+            <Property
               title='Request Parameters'
               data={parameters}
             />
