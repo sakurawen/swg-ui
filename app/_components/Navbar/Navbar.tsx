@@ -3,6 +3,13 @@ import { SwaggerResource } from '@/app/typing';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { ModeToggle } from '../mode-toggle';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { settingAtom } from '@/app/atoms/setting';
+import { Button } from '@/components/ui/button';
+import { EnterFullScreenIcon, ExitFullScreenIcon } from '@radix-ui/react-icons';
+import { selectAtom } from 'jotai/utils';
+import { useCallback } from 'react';
+import cx from 'clsx';
 
 type NavbarProps = {
   swaggerResources: SwaggerResource[];
@@ -11,6 +18,7 @@ type NavbarProps = {
 export function Navbar(props: NavbarProps) {
   const { swaggerResources } = props;
   const router = useRouter();
+  const [setting, setSetting] = useAtom(settingAtom);
   const { module } = useParams();
   const searchParams = useSearchParams();
   const currentModule = `/docs/${module}?${searchParams.toString()}`;
@@ -19,10 +27,20 @@ export function Navbar(props: NavbarProps) {
     const [, , modulePath = ''] = path.split('/');
     router.push(modulePath);
   }
+  const full = useAtomValue(
+    selectAtom(
+      settingAtom,
+      useCallback((s) => s.full, [])
+    )
+  );
 
   return (
     <div className='fixed z-10 w-full h-16  backdrop-blur-sm '>
-      <nav className='h-full max-w-7xl mx-auto flex justify-between items-center px-2.5 border-b'>
+      <nav
+        className={cx(
+          'h-full  mx-auto flex justify-between items-center px-2.5 border-b',
+          full ? 'w-full' : 'max-w-7xl'
+        )}>
         <span className='font-bold'>スワッガー・ユーアイ</span>
         <div className='flex items-center space-x-4'>
           <Select
@@ -47,6 +65,19 @@ export function Navbar(props: NavbarProps) {
             </SelectContent>
           </Select>
           <ModeToggle />
+          <Button
+            onClick={() => {
+              setSetting((s) => {
+                return {
+                  ...s,
+                  full: !s.full,
+                };
+              });
+            }}
+            variant='outline'
+            size='icon'>
+            {setting.full ? <ExitFullScreenIcon /> : <EnterFullScreenIcon />}
+          </Button>
         </div>
       </nav>
     </div>

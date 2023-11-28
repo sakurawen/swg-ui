@@ -1,4 +1,5 @@
 import { JotaiProvider } from '@/app/_components/jotai-provider';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import cx from 'clsx';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
@@ -48,7 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             defaultTheme='system'
             enableSystem
             disableTransitionOnChange>
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
           </NextThemeProvider>
           <Toaster />
         </JotaiProvider>

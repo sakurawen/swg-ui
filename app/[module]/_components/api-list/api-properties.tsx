@@ -1,18 +1,22 @@
 'use client';
-import cx from 'clsx';
-import { APIProperty, RefProperty } from './typing';
-import { useState } from 'react';
 import { TriangleRightIcon } from '@radix-ui/react-icons';
+import cx from 'clsx';
+import { OpenAPIV2 } from 'openapi-types';
+import { useState } from 'react';
+import { Tooltip } from '../tooltip';
+import { APIProperty, RefProperty } from './typing';
 
-interface PropertyProps {
+interface APIPropertiesProps {
   title: string;
   data?: APIProperty[];
+  definitions: OpenAPIV2.DefinitionsObject | undefined;
 }
+
 /**
  * 参数列表
  * @returns
  */
-export function Property({ title, data }: PropertyProps) {
+export function APIProperties({ title, data, definitions }: APIPropertiesProps) {
   if (!data) return null;
   if ((data?.length || 0) >= 100) {
     return <div className='pl-4'>参数过多不予展示</div>;
@@ -39,10 +43,10 @@ export function Property({ title, data }: PropertyProps) {
                     <i className={cx('text-red-500 mr-2 mt-1 select-none', { invisible: !p.required })}>*</i>
                     <div className='inline-block'>
                       <span
-                        className='inline-block font-bold max-w-1/2 text-ellipsis mr-2 '
                         onClick={() => {
                           console.log(p);
-                        }}>
+                        }}
+                        className='inline-block font-bold max-w-1/2 text-ellipsis mr-2 '>
                         {p.name}
                       </span>
                       <br />
@@ -56,9 +60,10 @@ export function Property({ title, data }: PropertyProps) {
                   </div>
                 </td>
                 <td className='font-normal align-top'>
-                  <div>
-                    <PropertyRef {...p} />
-                  </div>
+                  <PropertyRef
+                    {...p}
+                    definitions={definitions}
+                  />
                 </td>
               </tr>
             );
@@ -77,11 +82,11 @@ const TYPE_ALIAS_MAP = {
   object: 'Record<string,any>',
 } as Record<string, string>;
 
-function PropertyRef(p: RefProperty | APIProperty) {
+function PropertyRef(props: RefProperty | APIProperty) {
   const [open, setOpen] = useState(false);
-  const propertiesList = p.ref?.propertiesList || p.propertiesList || [];
+  const propertiesList = props.ref?.propertiesList || props.propertiesList || [];
   if (propertiesList.length !== 0) {
-    const refName = (p.name as string)?.replace(/^(.)/, (_, $1) => {
+    const refName = (props.name as string)?.replace(/^(.)/, (_, $1) => {
       return $1.toUpperCase();
     });
     return (
@@ -90,38 +95,46 @@ function PropertyRef(p: RefProperty | APIProperty) {
           className='flex items-center space-x-2 cursor-default'
           onClick={() => setOpen((open) => !open)}>
           {refName}
-          {p.schema.type === 'array' ? '[]' : null}
+          {props?.schema?.type === 'array' || props.type === 'array' ? '[]' : null}
           <TriangleRightIcon className={open ? 'rotate-90' : ''} />
         </div>
         {open ? (
           <table className='mb-6'>
             <thead>
               <tr>
-                <th className='pb-1 text-xs font-normal'>字段名</th>
-                <th className='pb-1 text-xs font-normal'>字段类型</th>
+                <th className='pb-1 pt-2 text-xs font-normal'>字段名</th>
+                <th className='pb-1 pt-2 text-xs font-normal'>字段类型</th>
               </tr>
             </thead>
             <tbody>
-              {propertiesList?.map((p) => {
-                if (!('name' in p)) return null;
+              {propertiesList?.map((property) => {
+                if (!('name' in property)) return null;
                 return (
                   <tr
-                    key={p.name}
+                    key={property.name}
                     className='mb-1.5'>
                     <td className='text-sm pr-4 align-top'>
                       <div className='flex items-start'>
                         <div className='inline-block'>
-                          <span className='inline-block font-bold max-w-1/2 text-ellipsis mr-2 '>{p.name}</span>
+                          <span
+                            onClick={() => {
+                              console.log(property, props.definitions);
+                            }}
+                            className='inline-block font-bold max-w-1/2 text-ellipsis mr-2 '>
+                            {property.name}
+                          </span>
                           <br />
                           <span className='text-xs'>
-                            <span>{p.description || '无说明'}</span>
+                            <span>
+                              <Tooltip tooltip={property.description || '无说明'} />{' '}
+                            </span>
                           </span>
                         </div>
                       </div>
                     </td>
                     <td className='font-normal align-top'>
                       <div>
-                        <PropertyRef {...p} />
+                        <PropertyRef {...property} />
                       </div>
                     </td>
                   </tr>
@@ -133,23 +146,23 @@ function PropertyRef(p: RefProperty | APIProperty) {
       </>
     );
   }
-  if (p?.schema?.items) {
-    return `${(TYPE_ALIAS_MAP[p.schema.items.type] ?? p.schema.items.type) || 'unknown'}[]`;
+  if (props?.schema?.items) {
+    return `${(TYPE_ALIAS_MAP[props.schema.items.type] ?? props.schema.items.type) || 'unknown'}[]`;
   }
-  if (!p?.schema?.items && p?.schema?.type) {
-    return TYPE_ALIAS_MAP[p.schema.type] || 'unknown';
+  if (!props?.schema?.items && props?.schema?.type) {
+    return TYPE_ALIAS_MAP[props.schema.type] || 'unknown';
   }
-  if (p.type === 'array' && p?.items?.type) {
-    return `${TYPE_ALIAS_MAP[p.items.type] || 'unknown'}[]`;
+  if (props.type === 'array' && props?.items?.type) {
+    return `${TYPE_ALIAS_MAP[props.items.type] || 'unknown'}[]`;
   }
-  if (p.type) return TYPE_ALIAS_MAP[p.type];
-  if (p.schema.originalRef && propertiesList.length === 0) {
+  if (props.type) return TYPE_ALIAS_MAP[props.type];
+  if (props?.schema?.originalRef && propertiesList.length === 0) {
     return 'Record<string,any>';
   }
 }
 
 function ParamDescription(p: APIProperty) {
   if (p.ref?.title) return p.ref.title;
-  if (p.description) return p.description;
+  if (p.description) return <Tooltip tooltip={p.description} />;
   return null;
 }

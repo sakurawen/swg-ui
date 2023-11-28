@@ -19,7 +19,7 @@ async function Module(props: ModuleProps) {
   const path = `/docs/${module}?version=${version}`;
   if (!module || !path) return notFound();
   return (
-    <div className='max-w-7xl mx-auto pt-16'>
+    <div className='pt-16'>
       <Suspense fallback='loading...'>
         <Swagger path={path} />
       </Suspense>

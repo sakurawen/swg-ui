@@ -1,10 +1,14 @@
 'use client';
 import { CustomOperationObject, CustomTagObject } from '@/app/typing';
 import { OpenAPIV2 } from 'openapi-types';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import useSWR from 'swr';
 import { APIList } from './api-list';
 import { Sidebar } from './sidebar';
+import cx from 'clsx';
+import { useAtomValue } from 'jotai';
+import { settingAtom } from '@/app/atoms/setting';
+import { selectAtom } from 'jotai/utils';
 
 type SwaggerProps = {
   path: string;
@@ -62,9 +66,15 @@ export function Swagger(props: SwaggerProps) {
   const [tag, setTag] = useState<OpenAPIV2.TagObject>();
 
   const { data: document } = useSWR(path, fetchSwaggerModuleData, { suspense: true, fallbackData: null });
-  document?.definitions
+  const full = useAtomValue(
+    selectAtom(
+      settingAtom,
+      useCallback((s) => s.full, [])
+    )
+  );
+
   return document ? (
-    <div className='flex overflow-hidden'>
+    <div className={cx('flex overflow-hidden  mx-auto', full ? 'w-full' : 'max-w-7xl')}>
       <Sidebar
         tags={document?.tags}
         selectTagName={tag?.name}

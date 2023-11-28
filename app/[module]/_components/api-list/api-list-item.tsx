@@ -11,9 +11,9 @@ import { sortBy } from 'lodash';
 import { useParams } from 'next/navigation';
 import { OpenAPIV2 } from 'openapi-types';
 import { useMemo } from 'react';
-import { Property } from './params';
-import { APIProperty, RefProperty } from './typing';
+import { APIProperties } from './api-properties';
 import Code from './code';
+import { APIProperty, RefProperty } from './typing';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
@@ -35,9 +35,12 @@ function buildRefProperty(ref: OpenAPIV2.SchemaObject, definitions: OpenAPIV2.De
       if (refProperty.properties) {
         buildRefProperty(refProperty, definitions);
       }
-      if (refProperty.$ref && refProperty.originalRef) {
-        refProperty.ref = definitions[refProperty.originalRef];
-        refProperty.propertiesList = buildPropertiesList(ref.properties || {});
+      if (
+        (refProperty.$ref && refProperty.originalRef) ||
+        (refProperty.items?.$ref && (refProperty.items as any)?.originalRef)
+      ) {
+        refProperty.ref = definitions[refProperty.originalRef || (refProperty.items as any).originalRef];
+        refProperty.propertiesList = buildPropertiesList(refProperty?.ref?.properties || {});
       }
     });
   }
@@ -81,7 +84,7 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
   const { module } = useParams<{ module: string }>();
   const { toast } = useToast();
 
-  const parameters = useMemo<APIProperty[]>(() => {
+  const properties = useMemo<APIProperty[]>(() => {
     const build = buildApiProperties(data.parameters, definitions);
     return sortBy(build, 'in');
   }, [data.parameters, definitions]);
@@ -106,28 +109,27 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
   function handleGenerateDTS(e: React.MouseEvent) {
     // e.stopPropagation();
     // e.preventDefault();
-    console.log(parameters);
+    console.log(properties);
   }
 
   return (
     <AccordionItem value={data.operationId || ''}>
       <AccordionTrigger className='px-2'>
-        <h2 className=''>
-          <span className='inline-block  text-left'>
-            <Badge
-              className='mr-2 uppercase'
-              variant='outline'>
-              {data.method}
-            </Badge>
-          </span>
+        <h2 className='text-left whitespace-nowrap text-ellipsis mr-1'>
+          <Badge
+            className='mr-2 uppercase'
+            variant='outline'>
+            {data.method}
+          </Badge>
           <span>{data.summary} </span>
-          <span> {data.path}</span>
+          <span>{data.path}</span>
         </h2>
       </AccordionTrigger>
       <AccordionContent>
         <div className='text-left'>
           <div className='flex pl-1 py-1 mb-2'>
             <Button
+              className='cursor-default'
               variant='link'
               size='sm'
               onClick={handleCopyURL}>
@@ -138,6 +140,7 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               复制请求链接
             </Button>
             <Button
+              className='cursor-default'
               variant='link'
               size='sm'>
               <Icon
@@ -149,6 +152,7 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
             <Dialog>
               <DialogTrigger onClick={handleGenerateDTS}>
                 <Button
+                  className='cursor-default'
                   variant='link'
                   size='sm'>
                   <Icon
@@ -160,7 +164,8 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>{data.summary} DTS</DialogHeader>
-                <Code code={`
+                <Code
+                  code={`
 interface Person{
   age:number
   name:string
@@ -172,14 +177,16 @@ type Props = {
 export default function G(){
   return <div>wuhu</div>
 }
-                `}/>
+                `}
+                />
               </DialogContent>
             </Dialog>
           </div>
           <div className='space-y-8'>
-            <Property
+            <APIProperties
               title='Request Parameters'
-              data={parameters}
+              data={properties}
+              definitions={definitions}
             />
           </div>
         </div>
