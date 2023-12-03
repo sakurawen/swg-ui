@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { Suspense } from 'react';
 import { Swagger } from './_components/swagger';
 
 type ModuleProps = {
@@ -20,9 +19,7 @@ async function Module(props: ModuleProps) {
   if (!module || !path) return notFound();
   return (
     <div className='pt-16'>
-      <Suspense fallback='loading...'>
-        <Swagger path={path} />
-      </Suspense>
+      <Swagger path={path} />
     </div>
   );
 }

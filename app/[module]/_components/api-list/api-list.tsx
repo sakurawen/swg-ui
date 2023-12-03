@@ -6,19 +6,20 @@ import { useMemo } from 'react';
 import { APIListItem } from './api-list-item';
 import { Accordion } from '@/components/ui/accordion';
 
+
 type ApiListProps = {
   tags: OpenAPIV2.Document['tags'];
   definitions: OpenAPIV2.Document['definitions'];
-  tag?: OpenAPIV2.TagObject;
+  currentTagName?: string;
 };
 
-export function APIList({ tags, tag ,definitions}: ApiListProps) {
+export function APIList({ tags, currentTagName, definitions }: ApiListProps) {
   const [apiRecord, apiPaths] = useMemo<[Record<string, CustomOperationObject[]>, string[]]>(() => {
-    const menu = tags?.find((t) => t.name === tag?.name) as CustomTagObject;
+    const menu = tags?.find((t) => t.name === currentTagName) as CustomTagObject;
     if (!menu) return [{}, []];
     const paths = Object.keys(menu.api);
     return [menu.api, paths];
-  }, [tag, tags]);
+  }, [currentTagName, tags]);
 
   return (
     <ScrollArea className='h-[calc(100vh-64px)] pt-2 pb-1'>

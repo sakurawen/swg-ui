@@ -4,6 +4,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Icon } from '@iconify/react';
 import { copy } from 'clipboard';
@@ -11,83 +12,28 @@ import { sortBy } from 'lodash';
 import { useParams } from 'next/navigation';
 import { OpenAPIV2 } from 'openapi-types';
 import { useMemo } from 'react';
-import { APIProperties } from './api-properties';
-import Code from './code';
-import { APIProperty, RefProperty } from './typing';
+import { APIParameterList } from './api-parameters';
+import { APIParameter } from './typing';
+import { buildRequestParameters } from './utils/request';
+import { buildResponseParameters } from './utils/response';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
   definitions: OpenAPIV2.Document['definitions'];
 };
-function buildPropertiesList(
-  properties: Record<string, OpenAPIV2.SchemaObject>
-): Array<{ name: string } & OpenAPIV2.SchemaObject> {
-  const result = [];
-  for (let key in properties) {
-    result.push({ name: key, ...properties[key] });
-  }
-  return result;
-}
-
-function buildRefProperty(ref: OpenAPIV2.SchemaObject, definitions: OpenAPIV2.DefinitionsObject): RefProperty {
-  if (ref.properties) {
-    Object.values(ref.properties).forEach((refProperty) => {
-      if (refProperty.properties) {
-        buildRefProperty(refProperty, definitions);
-      }
-      if (
-        (refProperty.$ref && refProperty.originalRef) ||
-        (refProperty.items?.$ref && (refProperty.items as any)?.originalRef)
-      ) {
-        refProperty.ref = definitions[refProperty.originalRef || (refProperty.items as any).originalRef];
-        refProperty.propertiesList = buildPropertiesList(refProperty?.ref?.properties || {});
-      }
-    });
-  }
-  return ref;
-}
-
-function buildApiProperty(parameter: OpenAPIV2.Parameters[number], definitions: OpenAPIV2.DefinitionsObject) {
-  if (!('name' in parameter)) return undefined;
-  const apiProperty: APIProperty = { ...parameter };
-  if (
-    (parameter?.schema?.originalRef && parameter?.schema.$ref) ||
-    (parameter.schema?.items?.originalRef && parameter.schema?.type === 'array')
-  ) {
-    const ref = buildRefProperty(
-      definitions[parameter?.schema?.originalRef ?? parameter.schema?.items?.originalRef],
-      definitions
-    );
-    apiProperty.ref = ref;
-    apiProperty.propertiesList = buildPropertiesList(ref.properties || {});
-  }
-  return apiProperty;
-}
-
-function buildApiProperties(
-  parameters?: OpenAPIV2.Parameters | undefined,
-  definitions?: OpenAPIV2.DefinitionsObject
-): APIProperty[] {
-  if (!parameters || !definitions) return [];
-  const apiProperties: APIProperty[] = [];
-  parameters.forEach((parameter) => {
-    if (!('name' in parameter)) return;
-    const apiProperty = buildApiProperty(parameter, definitions);
-    if (apiProperty) {
-      apiProperties.push(apiProperty);
-    }
-  });
-  return apiProperties;
-}
 
 export function APIListItem({ data, definitions }: APIListItemProps) {
   const { module } = useParams<{ module: string }>();
   const { toast } = useToast();
-
-  const properties = useMemo<APIProperty[]>(() => {
-    const build = buildApiProperties(data.parameters, definitions);
-    return sortBy(build, 'in');
+  const requestParameters = useMemo<APIParameter[]>(() => {
+    const request = buildRequestParameters(data.parameters, definitions);
+    return sortBy(request, 'in');
   }, [data.parameters, definitions]);
+
+  const responseParameters = useMemo<APIParameter[]>(() => {
+    const response = buildResponseParameters(data.method, data.path, data.responses, definitions);
+    return response;
+  }, [data.method, data.path, data.responses, definitions]);
 
   function handleCopyURL() {
     try {
@@ -105,16 +51,21 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
       });
     }
   }
-
-  function handleGenerateDTS(e: React.MouseEvent) {
-    // e.stopPropagation();
-    // e.preventDefault();
-    console.log(properties);
+  function handleGenerateRequestDTS(e: React.MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    console.log({ data, requestParameters, definitions });
   }
 
+  function handleGenerateResponseDTS(e: React.MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    console.log({ data, responseParameters, definitions });
+  }
   return (
     <AccordionItem value={data.operationId || ''}>
-      <AccordionTrigger className='px-2'>
+      <AccordionTrigger className='px-2 cursor-default'>
         <h2 className='text-left whitespace-nowrap text-ellipsis mr-1'>
           <Badge
             className='mr-2 uppercase'
@@ -142,7 +93,8 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
             <Button
               className='cursor-default'
               variant='link'
-              size='sm'>
+              size='sm'
+              onClick={handleGenerateRequestDTS}>
               <Icon
                 className='w-5 h-5 mr-1'
                 icon='mdi:language-typescript'
@@ -150,7 +102,7 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               获取 Request DTS
             </Button>
             <Dialog>
-              <DialogTrigger onClick={handleGenerateDTS}>
+              <DialogTrigger onClick={handleGenerateResponseDTS}>
                 <Button
                   className='cursor-default'
                   variant='link'
@@ -164,30 +116,36 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>{data.summary} DTS</DialogHeader>
-                <Code
-                  code={`
-interface Person{
-  age:number
-  name:string
-}
-type Props = {
-  giao:number,
-  home:Person
-}
-export default function G(){
-  return <div>wuhu</div>
-}
-                `}
-                />
               </DialogContent>
             </Dialog>
           </div>
           <div className='space-y-8'>
-            <APIProperties
-              title='Request Parameters'
-              data={properties}
-              definitions={definitions}
-            />
+            <Tabs defaultValue='request'>
+              <TabsList className='ml-2 mb-2'>
+                <TabsTrigger
+                  className='px-6'
+                  value='request'>
+                  Parameters
+                </TabsTrigger>
+                <TabsTrigger
+                  className='px-6'
+                  value='response'>
+                  Responses
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value='request'>
+                <APIParameterList
+                  data={requestParameters}
+                  definitions={definitions}
+                />
+              </TabsContent>
+              <TabsContent value='response'>
+                <APIParameterList
+                  data={responseParameters}
+                  definitions={definitions}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </AccordionContent>

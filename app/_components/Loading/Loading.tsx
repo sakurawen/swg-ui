@@ -1,11 +1,11 @@
 'use client';
-import { Loader2 } from 'lucide-react';
+import { Icon } from '@iconify/react';
 
 export function Loading() {
   return (
-    <div className='pt-36'>
-      <div className='mx-auto flex justify-center items-center'>
-        <Loader2 className='w-12 h-12 animate-spin' />
+    <div className='h-screen overflow-hidden justify-center items-center'>
+      <div className='mx-auto h-full flex justify-center items-center'>
+        <Icon icon="eos-icons:loading" className='w-12 h-12'/>
       </div>
     </div>
   );
