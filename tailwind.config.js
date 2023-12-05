@@ -13,6 +13,8 @@ module.exports = {
     extend: {
       fontFamily: {
         'harmony-sans': ['var(--harmony-sans)'],
+        "fira-code":['var(--fira-code)'],
+        "field-label":['var(--fira-code)','var(--harmony-sans)']
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

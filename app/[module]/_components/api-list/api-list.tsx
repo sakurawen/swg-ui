@@ -22,8 +22,8 @@ export function APIList({ tags, currentTagName, definitions }: ApiListProps) {
   }, [currentTagName, tags]);
 
   return (
-    <ScrollArea className='h-[calc(100vh-64px)] pt-2 pb-1'>
-      <div className='space-y-2'>
+    <ScrollArea className='h-[100vh] pb-2'>
+      <div className='space-y-2 mt-16'>
         <Accordion type='multiple'>
           {apiPaths.map((path) => {
             return apiRecord?.[path].map((api) => {

@@ -37,7 +37,6 @@ export function buildType(definition: OpenAPIV2.SchemaObject): APIParameter[] {
   let result: APIParameter[] = [];
   if (isNil(definition.properties)) return result;
   const typeKeys = Object.keys(definition.properties || {});
-  console.log(definition);
   for (let i = 0; i < typeKeys.length; i++) {
     const name = typeKeys[i];
     const itemType = definition.properties[name];
@@ -59,7 +58,7 @@ export function buildType(definition: OpenAPIV2.SchemaObject): APIParameter[] {
       type,
       kind,
       $ref,
-      description: itemType.description || '说明',
+      description: itemType.description || '无说明',
       required: false,
     });
   }

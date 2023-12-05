@@ -17,11 +17,7 @@ async function Module(props: ModuleProps) {
   } = props;
   const path = `/docs/${module}?version=${version}`;
   if (!module || !path) return notFound();
-  return (
-    <div className='pt-16'>
-      <SwaggerApp path={path} />
-    </div>
-  );
+  return <SwaggerApp path={path} />;
 }
 
 export default Module;

@@ -1,8 +1,8 @@
 import { OpenAPIV2 } from 'openapi-types';
 import { APIParameter } from '../../typing';
-import { buildType, getDefinition, isReferenceObject, isSchemaObject } from './format';
+import { getDefinition, isReferenceObject, isSchemaObject } from './format';
+import { isItemsObject } from '../schema/format';
 
-import { isItemsObject } from '../shared';
 export function buildRequest(input: OpenAPIV2.Parameters, definitions: OpenAPIV2.DefinitionsObject): APIParameter[] {
   const output: APIParameter[] = [];
   input.forEach((param) => {

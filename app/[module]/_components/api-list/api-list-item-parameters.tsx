@@ -54,11 +54,11 @@ export function APIParameterList({ data, definitions, required, firstLayer }: AP
                       onClick={() => {
                         console.log(p);
                       }}
-                      className='inline-block font-bold max-w-1/2 text-ellipsis mr-2 '>
+                      className='inline-block font-field-label font-bold text-sm max-w-1/2 text-ellipsis mr-2 '>
                       {p.name}
                     </div>
                     <br />
-                    <div className='text-xs inline-flex space-x-2 items-center align-middle'>
+                    <div className='text-xs text-secondary-foreground mb-1 inline-flex space-x-2 items-center align-middle'>
                       {p.in ? <span>{p.in}</span> : null}
                       <div className='text-ellipsis overflow-hidden inline-block whitespace-nowrap'>
                         <Description {...p} />
@@ -103,7 +103,7 @@ function Type(props: { parameter: APIParameter; definitions: OpenAPIV2.Definitio
     return (
       <>
         <div
-          className='flex items-center space-x-2 cursor-default font-mono'
+          className='flex items-center space-x-2 cursor-default font-fira-code'
           onClick={() => setOpen((open) => !open)}>
           {props.parameter.kind === 'array' ? `Array<${fieldName}>` : fieldName}
           <TriangleRightIcon className={open ? 'transition rotate-90' : 'transition'} />
@@ -120,18 +120,18 @@ function Type(props: { parameter: APIParameter; definitions: OpenAPIV2.Definitio
   }
 
   if (props?.parameter.kind === 'array' && typeof props.parameter.type === 'string') {
-    return <span className='font-mono'>Array{`<${KIND_ALIAS_MAP[props.parameter.type] || 'unknown'}>`}</span>;
+    return <span className='font-fira-code'>Array{`<${KIND_ALIAS_MAP[props.parameter.type] || 'unknown'}>`}</span>;
   }
 
   if (props.parameter.kind !== 'object' && typeof props.parameter.type === 'string') {
-    return <span className='font-mono'>{KIND_ALIAS_MAP[props.parameter.kind]}</span>;
+    return <span className='font-fira-code'>{KIND_ALIAS_MAP[props.parameter.kind]}</span>;
   }
 
   if (KIND_ALIAS_MAP[props.parameter.kind]) {
-    return <span className='font-mono'>{KIND_ALIAS_MAP[props.parameter.kind]}</span>;
+    return <span className='font-fira-code'>{KIND_ALIAS_MAP[props.parameter.kind]}</span>;
   }
 
-  return <span className='font-mono'>unknown</span>;
+  return <span className='font-fira-code'>unknown</span>;
 }
 
 function Description(p: APIParameter) {
