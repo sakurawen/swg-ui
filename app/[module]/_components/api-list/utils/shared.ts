@@ -46,7 +46,7 @@ export function buildType(
       const originalRef = getOriginalRef(p.$ref);
       if (!originalRef) throw new Error('originalRef is undefined');
       const definition = definitions[originalRef];
-      type = buildType(definition.properties, definitions);
+      // type = buildType(definition.properties, definitions);
     }
 
     result.push({

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Swagger } from './_components/swagger';
+import { SwaggerApp } from './_components/swagger-app';
 
 type ModuleProps = {
   params: {
@@ -19,7 +19,7 @@ async function Module(props: ModuleProps) {
   if (!module || !path) return notFound();
   return (
     <div className='pt-16'>
-      <Swagger path={path} />
+      <SwaggerApp path={path} />
     </div>
   );
 }

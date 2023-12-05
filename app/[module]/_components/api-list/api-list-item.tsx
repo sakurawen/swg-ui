@@ -12,10 +12,10 @@ import { sortBy } from 'lodash';
 import { useParams } from 'next/navigation';
 import { OpenAPIV2 } from 'openapi-types';
 import { useMemo } from 'react';
-import { APIParameterList } from './api-parameters';
+import { APIParameterList } from './api-list-item-parameters';
 import { APIParameter } from './typing';
-import { buildRequestParameters } from './utils/request';
-import { buildResponseParameters } from './utils/response';
+import { buildRequest } from './utils/schema/request';
+import { buildResponse } from './utils/schema/response';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
@@ -25,13 +25,15 @@ export type APIListItemProps = {
 export function APIListItem({ data, definitions }: APIListItemProps) {
   const { module } = useParams<{ module: string }>();
   const { toast } = useToast();
+
   const requestParameters = useMemo<APIParameter[]>(() => {
-    const request = buildRequestParameters(data.parameters, definitions);
-    return sortBy(request, 'in');
+    if (!data.parameters || !definitions) return [];
+    const test = buildRequest(data.parameters, definitions);
+    return sortBy(test, 'in');
   }, [data.parameters, definitions]);
 
   const responseParameters = useMemo<APIParameter[]>(() => {
-    const response = buildResponseParameters(data.method, data.path, data.responses, definitions);
+    const response = buildResponse(data.method, data.path, data.responses, definitions);
     return response;
   }, [data.method, data.path, data.responses, definitions]);
 
@@ -60,7 +62,6 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
   function handleGenerateResponseDTS(e: React.MouseEvent) {
     e.stopPropagation();
     e.preventDefault();
-
     console.log({ data, responseParameters, definitions });
   }
   return (
@@ -137,12 +138,14 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                 <APIParameterList
                   data={requestParameters}
                   definitions={definitions}
+                  firstLayer
                 />
               </TabsContent>
               <TabsContent value='response'>
                 <APIParameterList
                   data={responseParameters}
                   definitions={definitions}
+                  firstLayer
                 />
               </TabsContent>
             </Tabs>

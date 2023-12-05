@@ -8,11 +8,11 @@ import { useCallback, useMemo } from 'react';
 import { APIList } from './api-list';
 import { Sidebar } from './sidebar';
 
-type SwaggerProps = {
+type SwaggerAppProps = {
   path: string;
 };
 
-export function Swagger(props: SwaggerProps) {
+export function SwaggerApp(props: SwaggerAppProps) {
   const { path } = props;
 
   const [currentTagName, setCurrentTagName] = useAtom(currentSwaggerTagAtom);

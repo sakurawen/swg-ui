@@ -10,5 +10,14 @@ export type APIParameter = {
   in?: string;
   required?: boolean;
   raw?: any;
+  itemsTypeName?: string;
+  /**
+   * 标记
+   */
+  flag?: string;
+  /**
+   * 引用
+   */
+  $ref?: string;
 };
-export type RefProperty = OpenAPIV2.SchemaObject & { ref?: RefProperty; propertiesList?: RefProperty[] };
+export type RefProperty = OpenAPIV2.SchemaObject;
