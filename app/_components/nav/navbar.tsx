@@ -35,7 +35,7 @@ export function Navbar(props: NavbarProps) {
   );
 
   return (
-    <div className='fixed z-10 w-full h-16  backdrop-blur-sm '>
+    <div className='fixed z-10 w-full h-16  backdrop-blur-lg bg-background/40'>
       <nav
         className={cx(
           'h-full  mx-auto flex justify-between items-center px-2.5 border-b',
