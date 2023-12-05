@@ -6,7 +6,7 @@ import { selectAtom } from 'jotai/utils';
 import { OpenAPIV2 } from 'openapi-types';
 import { useCallback, useMemo } from 'react';
 import { APIList } from './api-list';
-import { Sidebar } from './sidebar';
+import { SideBar } from './side-bar';
 
 type SwaggerAppProps = {
   path: string;
@@ -33,7 +33,7 @@ export function SwaggerApp(props: SwaggerAppProps) {
   
   return (
     <div className={cx('flex overflow-hidden  mx-auto', full ? 'w-full' : 'max-w-7xl')}>
-      <Sidebar
+      <SideBar
         tags={document?.tags}
         selectTagName={currentTagName}
         onTagChange={(tag) => setCurrentTagName(tag.name)}

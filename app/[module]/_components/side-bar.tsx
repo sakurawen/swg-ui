@@ -8,7 +8,7 @@ type SidebarProps = {
   onTagChange?: (tag: OpenAPIV2.TagObject) => void;
 };
 
-export function Sidebar({ tags, onTagChange, selectTagName }: SidebarProps) {
+export function SideBar({ tags, onTagChange, selectTagName }: SidebarProps) {
   return (
     <menu className='px-1 flex-shrink-0'>
       <ScrollArea className='h-[calc(100vh-64px)] mt-16 pb-1'>
