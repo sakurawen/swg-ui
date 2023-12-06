@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { SwaggerApp } from './_components/swagger-app';
 import { OpenAPIV2 } from 'openapi-types';
 
-export async function fetchSwaggerModuleData({
+async function fetchSwaggerModuleData({
   module,
   version,
 }: {
