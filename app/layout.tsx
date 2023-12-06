@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description: 'スワッガー・ユーアイ',
 };
 
+
 const harmonySans = localFont({
   src: [
     {

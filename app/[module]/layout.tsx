@@ -4,6 +4,8 @@ import { SwaggerResource } from '@/app/typing';
 import { notFound } from 'next/navigation';
 import { PropsWithChildren, Suspense } from 'react';
 
+export const revalidate = 300;
+
 async function getSwaggerResource(): Promise<SwaggerResource[]> {
   try {
     const swgResource = await fetch(
