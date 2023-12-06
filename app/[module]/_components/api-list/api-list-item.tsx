@@ -11,11 +11,13 @@ import { copy } from 'clipboard';
 import { sortBy } from 'lodash';
 import { useParams } from 'next/navigation';
 import { OpenAPIV2 } from 'openapi-types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { APIParameterList } from './api-list-item-parameters';
 import { APIParameter } from './typing';
 import { buildRequest } from './utils/schema/request';
 import { buildResponse } from './utils/schema/response';
+import Code from './code';
+import { buildDTS } from './utils/schema/format';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
@@ -53,17 +55,20 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
       });
     }
   }
+  const [code, setCode] = useState('');
+
   function handleGenerateRequestDTS(e: React.MouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
-    console.log({ data, requestParameters, definitions });
+    const code = buildDTS(requestParameters);
+    setCode(code)
+    console.log({ data, requestParameters, definitions, code });
   }
 
   function handleGenerateResponseDTS(e: React.MouseEvent) {
-    e.stopPropagation();
-    e.preventDefault();
-    console.log({ data, responseParameters, definitions });
+    const code = buildDTS(responseParameters);
+    setCode(code)
+    console.log({ data, responseParameters, definitions, code });
   }
+
   return (
     <AccordionItem value={data.operationId || ''}>
       <AccordionTrigger className='px-2 cursor-default'>
@@ -91,18 +96,33 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               />
               复制请求链接
             </Button>
-            <Button
-              className='cursor-default'
-              variant='link'
-              size='sm'
-              onClick={handleGenerateRequestDTS}>
-              <Icon
-                className='w-5 h-5 mr-1'
-                icon='mdi:language-typescript'
-              />
-              获取 Request DTS
-            </Button>
-            <Dialog>
+            <Dialog
+              onOpenChange={(open) => {
+                if (!open) setCode('');
+              }}>
+              <DialogTrigger>
+                <Button
+                  className='cursor-default'
+                  variant='link'
+                  size='sm'
+                  onClick={handleGenerateRequestDTS}>
+                  <Icon
+                    className='w-5 h-5 mr-1'
+                    icon='mdi:language-typescript'
+                  />
+                  获取 Request DTS
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>{data.summary} Request DTS</DialogHeader>
+                <Code code={code} />
+              </DialogContent>
+            </Dialog>
+
+            <Dialog
+              onOpenChange={(open) => {
+                if (!open) setCode('');
+              }}>
               <DialogTrigger onClick={handleGenerateResponseDTS}>
                 <Button
                   className='cursor-default'
@@ -116,7 +136,8 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader>{data.summary} DTS</DialogHeader>
+                <DialogHeader>{data.summary} Response DTS</DialogHeader>
+                <Code code={code} />
               </DialogContent>
             </Dialog>
           </div>

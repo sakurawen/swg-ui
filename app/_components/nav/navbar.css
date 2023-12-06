@@ -1,0 +1,30 @@
+.point::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  bottom: -20px;
+  left: -20px;
+  pointer-events: none;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #a8dbdd -97.5deg,
+    #0873ca 14.05deg,
+    #040eff 54.01deg,
+    #8400ff 113.42deg,
+    #00b67f 185.62deg,
+    rgb(119, 137, 218) 262.5deg,
+    #96e1ff 374.05deg
+  );
+  filter: blur(60px) brightness(1.5);
+  z-index: -1;
+  animation: 30s move linear infinite;
+}
+@keyframes move {
+  from {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(540deg);
+  }
+}

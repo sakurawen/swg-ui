@@ -64,3 +64,26 @@ export function buildType(definition: OpenAPIV2.SchemaObject): APIParameter[] {
   }
   return result;
 }
+
+
+type DTSItem ={
+  type:string
+  label:String
+  isArray:boolean
+}
+export function buildDTS(parameters:APIParameter[]){
+  return parameters.map(p=>{
+    return buildDTSInterface(p)
+  }).join("")
+}
+
+export function buildDTSInterface(parameter:APIParameter){
+  if(!parameter.$ref){
+    return `${parameter.name}: ${parameter.kind}`
+  }
+  return `
+interface ${parameter.name} {
+  ref: ${parameter.$ref}
+}
+`
+}

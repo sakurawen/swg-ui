@@ -39,7 +39,6 @@ type SwaggerAppProps = {
 };
 export function SwaggerApp(props: SwaggerAppProps) {
   const { module, version } = props;
-
   const [currentTagName, setCurrentTagName] = useAtom(currentSwaggerTagAtom);
 
   const full = useAtomValue(

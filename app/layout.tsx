@@ -40,6 +40,7 @@ const harmonySans = localFont({
   variable: '--harmony-sans',
   display: 'swap',
 });
+
 const firaCode = Fira_Code({
   subsets: ['latin'],
   display: 'swap',
