@@ -106,7 +106,7 @@ function Type(props: { parameter: APIParameter; definitions: OpenAPIV2.Definitio
           className='flex items-center space-x-2 cursor-default font-fira-code'
           onClick={() => setOpen((open) => !open)}>
           {props.parameter.kind === 'array' ? `Array<${fieldName}>` : fieldName}
-          <TriangleRightIcon className={open ? 'transition rotate-90' : 'transition'} />
+          <TriangleRightIcon className={open ? 'transition w-6 h-6 rotate-90' : 'transition w-6 h-6'} />
         </div>
         {open ? (
           <APIParameterList

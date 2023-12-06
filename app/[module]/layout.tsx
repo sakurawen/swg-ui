@@ -6,7 +6,11 @@ import { PropsWithChildren, Suspense } from 'react';
 
 async function getSwaggerResource(): Promise<SwaggerResource[]> {
   try {
-    const swgResource = await fetch('http://114.132.233.183:8080/swagger/swagger-resources');
+    const swgResource = await fetch(
+      process.env.NODE_ENV === 'production'
+        ? 'https://swg.akumanoko.com/api/swagger/resource'
+        : `http://localhost:3000/api/swagger/resource`
+    );
     return swgResource.json();
   } catch (err) {
     console.error('get swagger resource failed:', err);

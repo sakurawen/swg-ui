@@ -1,5 +1,5 @@
 'use client';
-import { currentSwaggerTagAtom, fetchSwaggerModuleData, settingAtom } from '@/app/atoms/setting';
+import { currentSwaggerTagAtom, formatDocument, settingAtom } from '@/app/atoms/setting';
 import cx from 'clsx';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { selectAtom } from 'jotai/utils';
@@ -8,13 +8,17 @@ import { useCallback, useMemo } from 'react';
 import { APIList } from './api-list';
 import { SideBar } from './side-bar';
 
+// type SwaggerAppProps = {
+//   module: string;
+//   version:string
+// };
 type SwaggerAppProps = {
-  path: string;
+  data: OpenAPIV2.Document;
 };
-
 export function SwaggerApp(props: SwaggerAppProps) {
-  const { path } = props;
-
+  const { data } = props;
+  // const { module,version } = props;
+  const document = useMemo(() => formatDocument(data), [data]);
   const [currentTagName, setCurrentTagName] = useAtom(currentSwaggerTagAtom);
   const full = useAtomValue(
     selectAtom(
@@ -23,14 +27,14 @@ export function SwaggerApp(props: SwaggerAppProps) {
     )
   );
 
-  const fetcherAtom = useMemo(() => {
-    return atom<Promise<OpenAPIV2.Document>>(async () => {
-      return await fetchSwaggerModuleData(path);
-    });
-  }, [path]);
+  // const fetcherAtom = useMemo(() => {
+  //   return atom<Promise<OpenAPIV2.Document>>(async () => {
+  //     return await fetchSwaggerModuleData({module,version});
+  //   });
+  // }, [module,version]);
 
-  const document = useAtomValue(fetcherAtom);
-  
+  // const document = useAtomValue(fetcherAtom);
+
   return (
     <div className={cx('flex overflow-hidden  mx-auto', full ? 'w-full' : 'max-w-7xl')}>
       <SideBar

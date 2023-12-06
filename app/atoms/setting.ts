@@ -28,7 +28,7 @@ function formatDocumentTagApi(
   });
 }
 
-function formatDocument(document: OpenAPIV2.Document) {
+export function formatDocument(document: OpenAPIV2.Document) {
   const tagsMap =
     document.tags?.reduce((acc, cur) => {
       acc[cur.name] = Object.assign(cur, { api: {} });
@@ -40,13 +40,5 @@ function formatDocument(document: OpenAPIV2.Document) {
     const pathObject = document.paths[pathKey];
     formatDocumentTagApi(pathKey, pathObject, tagsMap);
   }
+  return document
 }
-
-export async function fetchSwaggerModuleData(path: string): Promise<OpenAPIV2.Document> {
-  const reqUrl = `http://114.132.233.183:8080/swagger${path}`;
-  const res = await fetch(reqUrl, { cache: 'no-store' });
-  const document: OpenAPIV2.Document = await res.json();
-  formatDocument(document);
-  return document;
-}
-
