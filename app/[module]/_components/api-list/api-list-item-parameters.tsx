@@ -6,7 +6,7 @@ import { OpenAPIV2 } from 'openapi-types';
 import { useMemo, useState } from 'react';
 import { Tooltip } from '../tooltip';
 import { APIParameter } from './typing';
-import { buildType, getDefinition } from './utils/schema/format';
+import { KIND_ALIAS_MAP, buildType, getDefinition } from './utils/schema/format';
 
 interface APIParameterListProps {
   data?: APIParameter[];
@@ -81,13 +81,6 @@ export function APIParameterList({ data, definitions, required, firstLayer }: AP
   );
 }
 
-const KIND_ALIAS_MAP = {
-  integer: 'number',
-  number: 'number',
-  string: 'string',
-  boolean: 'boolean',
-  object: 'Record<string,any>',
-} as Record<string, string>;
 
 function Type(props: { parameter: APIParameter; definitions: OpenAPIV2.DefinitionsObject | undefined }) {
   const { definitions } = props;

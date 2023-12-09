@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { SwaggerApp } from './_components/swagger-app';
+import { Suspense } from 'react';
 
 export const revalidate = 3000;
 
@@ -19,10 +20,12 @@ async function Module(props: ModuleProps) {
   } = props;
   if (!module || !version) return notFound();
   return (
-    <SwaggerApp
-      module={module}
-      version={version}
-    />
+    <Suspense fallback='loading...'>
+      <SwaggerApp
+        module={module}
+        version={version}
+      />
+    </Suspense>
   );
 }
 

@@ -22,7 +22,6 @@ async function getSwaggerResource(): Promise<SwaggerResource[]> {
 
 async function ModuleLayout({ children }: PropsWithChildren) {
   const resourceList = await getSwaggerResource();
-  if (!resourceList) return notFound();
   return (
     <Suspense fallback={<Loading />}>
       <Navbar swaggerResources={resourceList} />

@@ -18,6 +18,7 @@ import { buildRequest } from './utils/schema/request';
 import { buildResponse } from './utils/schema/response';
 import Code from './code';
 import { buildDTS } from './utils/schema/format';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
@@ -58,14 +59,14 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
   const [code, setCode] = useState('');
 
   function handleGenerateRequestDTS(e: React.MouseEvent) {
-    const code = buildDTS(requestParameters);
-    setCode(code)
+    const code = buildDTS(requestParameters, definitions);
+    setCode(code);
     console.log({ data, requestParameters, definitions, code });
   }
 
   function handleGenerateResponseDTS(e: React.MouseEvent) {
-    const code = buildDTS(responseParameters);
-    setCode(code)
+    const code = buildDTS(responseParameters, definitions);
+    setCode(code);
     console.log({ data, responseParameters, definitions, code });
   }
 
@@ -113,12 +114,13 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                   获取 Request DTS
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className='max-w-4xl '>
                 <DialogHeader>{data.summary} Request DTS</DialogHeader>
-                <Code code={code} />
+                <ScrollArea className='max-h-[60vh]'>
+                  <Code code={code} />
+                </ScrollArea>
               </DialogContent>
             </Dialog>
-
             <Dialog
               onOpenChange={(open) => {
                 if (!open) setCode('');
@@ -135,9 +137,11 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                   获取 Response DTS
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className='max-w-4xl '>
                 <DialogHeader>{data.summary} Response DTS</DialogHeader>
-                <Code code={code} />
+                <ScrollArea className='max-h-[60vh]'>
+                  <Code code={code} />
+                </ScrollArea>
               </DialogContent>
             </Dialog>
           </div>
