@@ -42,7 +42,11 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
 
   function handleCopyURL() {
     try {
-      const copyPath = `\`/${module}${data.path.replace('{organizationId}', '${getCurrentOrganizationId()}')}\``;
+      const copyPath = `\`/${module}${data.path
+        .replace('{organizationId}', '{getCurrentOrganizationId()}')
+        .replace(/\{([^\}]+)\}/g, (value) => {
+          return `$${value}`;
+        })}\``;
       copy(copyPath);
       toast({
         title: '可以的，复制成功了',
@@ -97,30 +101,32 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               />
               复制请求链接
             </Button>
-            <Dialog
-              onOpenChange={(open) => {
-                if (!open) setCode('');
-              }}>
-              <DialogTrigger>
-                <Button
-                  className='cursor-default'
-                  variant='link'
-                  size='sm'
-                  onClick={handleGenerateRequestDTS}>
-                  <Icon
-                    className='w-5 h-5 mr-1'
-                    icon='mdi:language-typescript'
-                  />
-                  获取 Request DTS
-                </Button>
-              </DialogTrigger>
-              <DialogContent className='max-w-4xl '>
-                <DialogHeader>{data.summary} Request DTS</DialogHeader>
-                <ScrollArea className='max-h-[60vh]'>
-                  <Code code={code} />
-                </ScrollArea>
-              </DialogContent>
-            </Dialog>
+            {requestParameters.length >= 200 ? null : (
+              <Dialog
+                onOpenChange={(open) => {
+                  if (!open) setCode('');
+                }}>
+                <DialogTrigger>
+                  <Button
+                    className='cursor-default'
+                    variant='link'
+                    size='sm'
+                    onClick={handleGenerateRequestDTS}>
+                    <Icon
+                      className='w-5 h-5 mr-1'
+                      icon='mdi:language-typescript'
+                    />
+                    获取 Request Types
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className='max-w-4xl '>
+                  <DialogHeader className='text-2xl font-bold'>{data.summary} Request Types</DialogHeader>
+                  <ScrollArea className='max-h-[60vh] border rounded-lg shadow-sm'>
+                    <Code code={code} />
+                  </ScrollArea>
+                </DialogContent>
+              </Dialog>
+            )}
             <Dialog
               onOpenChange={(open) => {
                 if (!open) setCode('');
@@ -134,12 +140,12 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                     className='w-5 h-5 mr-1'
                     icon='mdi:language-typescript'
                   />
-                  获取 Response DTS
+                  获取 Response Types
                 </Button>
               </DialogTrigger>
               <DialogContent className='max-w-4xl '>
-                <DialogHeader>{data.summary} Response DTS</DialogHeader>
-                <ScrollArea className='max-h-[60vh]'>
+                <DialogHeader className='text-2xl font-bold'>{data.summary} Response Types</DialogHeader>
+                <ScrollArea className='max-h-[60vh] border rounded-lg shadow-sm'>
                   <Code code={code} />
                 </ScrollArea>
               </DialogContent>

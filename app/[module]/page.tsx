@@ -1,8 +1,4 @@
-import { notFound } from 'next/navigation';
 import { SwaggerApp } from './_components/swagger-app';
-import { Suspense } from 'react';
-
-export const revalidate = 3000;
 
 type ModuleProps = {
   params: {
@@ -18,14 +14,12 @@ async function Module(props: ModuleProps) {
     params: { module },
     searchParams: { version },
   } = props;
-  if (!module || !version) return notFound();
+  if (!module || !version) return null;
   return (
-    <Suspense fallback='loading...'>
-      <SwaggerApp
-        module={module}
-        version={version}
-      />
-    </Suspense>
+    <SwaggerApp
+      module={module}
+      version={version}
+    />
   );
 }
 

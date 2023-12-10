@@ -1,10 +1,9 @@
 import { Loading } from '@/app/_components/app-loading';
 import { Navbar } from '@/app/_components/nav';
 import { SwaggerResource } from '@/app/typing';
-import { notFound } from 'next/navigation';
 import { PropsWithChildren, Suspense } from 'react';
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 async function getSwaggerResource(): Promise<SwaggerResource[]> {
   try {

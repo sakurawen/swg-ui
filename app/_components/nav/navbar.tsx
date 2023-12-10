@@ -1,15 +1,14 @@
 'use client';
-import { SwaggerResource } from '@/app/typing';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useRouter, useParams, useSearchParams } from 'next/navigation';
-import { ModeToggle } from '../mode-toggle';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { Command } from '@/app/_components/cmdk';
 import { settingAtom } from '@/app/atoms/setting';
+import { SwaggerResource } from '@/app/typing';
 import { Button } from '@/components/ui/button';
 import { EnterFullScreenIcon, ExitFullScreenIcon } from '@radix-ui/react-icons';
+import cx from 'clsx';
+import { useAtom, useAtomValue } from 'jotai';
 import { selectAtom } from 'jotai/utils';
 import { useCallback } from 'react';
-import cx from 'clsx';
+import { ModeToggle } from '../mode-toggle';
 import './navbar.css';
 
 type NavbarProps = {
@@ -18,23 +17,14 @@ type NavbarProps = {
 
 export function Navbar(props: NavbarProps) {
   const { swaggerResources } = props;
-  const router = useRouter();
-  const [setting, setSetting] = useAtom(settingAtom);
-  const { module } = useParams();
-  const searchParams = useSearchParams();
-  const currentModule = `/docs/${module}?${searchParams.toString()}`;
-
-  function handleSwitchModule(path: string) {
-    const [, , modulePath = ''] = path.split('/');
-    router.push(modulePath);
-  }
   const full = useAtomValue(
     selectAtom(
       settingAtom,
       useCallback((s) => s.full, [])
     )
   );
-
+  const [setting, setSetting] = useAtom(settingAtom);
+ 
   return (
     <div className='fixed z-10 w-full h-16 overflow-hidden backdrop-blur-lg bg-background/40'>
       <nav
@@ -47,27 +37,7 @@ export function Navbar(props: NavbarProps) {
           <div className='point opacity-30 dark:opacity-60'></div>
         </div>
         <div className='flex items-center space-x-4'>
-          <Select
-            onValueChange={handleSwitchModule}
-            value={currentModule}>
-            <SelectTrigger className='w-[460px]'>
-              <SelectValue placeholder='选择模块'>{currentModule}</SelectValue>
-            </SelectTrigger>
-            <SelectContent className='w-[460px]'>
-              {swaggerResources.map((resource) => {
-                return (
-                  <SelectItem
-                    key={resource.name}
-                    value={resource.url}>
-                    <div>
-                      <span className='mr-2'>{resource.name}</span>
-                      <span className='text-xs'> ({resource.url})</span>
-                    </div>
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
+          <Command swaggerResources={swaggerResources} />
           <ModeToggle />
           <Button
             onClick={() => {

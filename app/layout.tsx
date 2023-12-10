@@ -7,12 +7,13 @@ import { Fira_Code } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { NextThemeProvider } from '@/app/_components/theme-provider';
+import { SWRConfigProvider } from '@/app/_components/swr-provider';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'スワッガー・ユーアイ',
   description: 'スワッガー・ユーアイ',
 };
-
 
 const harmonySans = localFont({
   src: [
@@ -52,16 +53,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang='en'>
       <body className={cx(harmonySans.className, 'min-h-screen', firaCode.variable)}>
         <JotaiProvider>
-          <NextThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange>
-            <TooltipProvider>{children}</TooltipProvider>
-          </NextThemeProvider>
+          <SWRConfigProvider>
+            <NextThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange>
+              <TooltipProvider>{children}</TooltipProvider>
+            </NextThemeProvider>
+          </SWRConfigProvider>
           <Toaster />
         </JotaiProvider>
       </body>
+      <Script src="https://cdn.jsdelivr.net/npm/shiki"/>
     </html>
   );
 }

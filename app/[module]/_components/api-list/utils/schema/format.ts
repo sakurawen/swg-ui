@@ -83,8 +83,10 @@ export function buildDTS(parameters: APIParameter[], definitions: OpenAPIV2.Defi
 
 export function buildDTSInterface(parameter: APIParameter, definitions: OpenAPIV2.DefinitionsObject | undefined) {
   if (!parameter.$ref) {
-    if (parameter.kind === 'object') return `type ${parameter.name} =  Record<string,any>;`;
-    return `type ${parameter.name} =  ${KIND_ALIAS_MAP[parameter.kind] || 'unknown'};`;
+    if (parameter.kind === 'object') return `type ${parameter.name} = Record<string,any>;`;
+    if (parameter.kind === 'array' && typeof parameter.type === 'string')
+      return `type ${parameter.name} = Array<${KIND_ALIAS_MAP[parameter.type] || 'unknown'}>;`;
+    return `type ${parameter.name} = ${KIND_ALIAS_MAP[parameter.kind] || 'unknown'};`;
   }
 
   function getRefFlag(p: APIParameter) {
@@ -123,7 +125,7 @@ export function buildDTSInterface(parameter: APIParameter, definitions: OpenAPIV
     name: string;
     def: OpenAPIV2.SchemaObject;
     $ref: string;
-    kind:string,
+    kind: string;
     parameters: string[];
   }> = [];
 
@@ -136,22 +138,20 @@ export function buildDTSInterface(parameter: APIParameter, definitions: OpenAPIV
       name,
       def,
       $ref,
-      kind:$refItem.kind,
+      kind: $refItem.kind,
       parameters: buildDTSRefParameters(def),
     });
   }
 
-  return resultTypes.map((type,index) => {
-    if(type.kind==='array'&&index===0){
-      return `
-export type ${type.name} = Array<{
-  ${type.parameters.join('\n')}
+  return resultTypes.map((type, index) => {
+    if (type.kind === 'array' && index === 0) {
+      return `export type ${type.name} = Array<{
+${type.parameters.join('\n')}
 }>
-`
+`;
     }
-    return `
-export interface ${type.name} {
-  ${type.parameters.join('\n')}
+    return `export interface ${type.name} {
+${type.parameters.join('\n')}
 }
 `;
   });

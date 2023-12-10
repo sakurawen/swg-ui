@@ -15,3 +15,4 @@ export type SwaggerResource = {
 export type CustomTagObject = OpenAPIV2.TagObject & {
   api: Record<string, CustomOperationObject[]>;
 };
+
