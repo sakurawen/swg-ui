@@ -1,17 +1,16 @@
 import { camelCase, isNil, upperFirst } from 'lodash';
 import { OpenAPIV2 } from 'openapi-types';
 import { APIParameter } from '../../typing';
-import { isReferenceObject, isSchemaObject } from './format';
+import { isReferenceObject } from './format';
 
 export function buildResponse(
   method: string,
   path: string,
-  responses: OpenAPIV2.ResponsesObject | undefined,
-  definitions: OpenAPIV2.DefinitionsObject | undefined
+  responses: OpenAPIV2.ResponsesObject | undefined
 ): APIParameter[] {
   const name = upperFirst(method) + upperFirst(camelCase(path.replace('/v1/{organizationId}', ''))) + 'Response';
   const success = responses?.['200'];
-  if (isNil(success) || isNil(definitions)) return [];
+  if (isNil(success)) return [];
   let result: APIParameter = {
     name,
     type: '',

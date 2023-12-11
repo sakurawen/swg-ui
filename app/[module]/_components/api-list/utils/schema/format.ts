@@ -1,6 +1,9 @@
 import { isNil, isString, upperFirst } from 'lodash';
 import { OpenAPIV2 } from 'openapi-types';
 import { APIParameter } from '../../typing';
+import {getDefaultStore} from "jotai"
+import {defsAtom} from "@/app/atoms/def"
+const store = getDefaultStore()
 
 export function isReferenceObject(obj?: any): obj is OpenAPIV2.ReferenceObject {
   if (!obj) return false;
@@ -21,15 +24,16 @@ export function getOriginalRef($ref: string) {
   return $ref.split('/').at(-1);
 }
 
-export function getDefinition(ref: string | undefined, definitions: OpenAPIV2.DefinitionsObject) {
+export function getDef(ref: string | undefined) {
   if (!isString(ref)) throw new Error('get definition error: ref is undefined');
   const originalRef = getOriginalRef(ref);
   if (!isString(originalRef)) throw new Error('get definition error: originalRef is undefined');
-  const definition = definitions[originalRef];
-  if (isNil(definition)) {
+  const defs = store.get(defsAtom)
+  const def = defs[originalRef];
+  if (isNil(def)) {
     throw new Error('get definition error: definition is not found');
   }
-  return definition;
+  return def;
 }
 
 export function buildType(definition: OpenAPIV2.SchemaObject): APIParameter[] {
@@ -72,16 +76,16 @@ export const KIND_ALIAS_MAP = {
   object: 'Record<string,any>',
 } as Record<string, string>;
 
-export function buildDTS(parameters: APIParameter[], definitions: OpenAPIV2.DefinitionsObject | undefined) {
+export function buildDTS(parameters: APIParameter[]) {
   const result: string[] = [];
   parameters.forEach((p) => {
-    const dtsInterface = buildDTSInterface(p, definitions);
+    const dtsInterface = buildDTSType(p);
     result.push(Array.isArray(dtsInterface) ? dtsInterface.join('\n') : dtsInterface || '');
   });
   return result.join('\n');
 }
 
-export function buildDTSInterface(parameter: APIParameter, definitions: OpenAPIV2.DefinitionsObject | undefined) {
+export function buildDTSType(parameter: APIParameter) {
   if (!parameter.$ref) {
     if (parameter.kind === 'object') return `type ${parameter.name} = Record<string,any>;`;
     if (parameter.kind === 'array' && typeof parameter.type === 'string')
@@ -110,8 +114,8 @@ export function buildDTSInterface(parameter: APIParameter, definitions: OpenAPIV
     return KIND_ALIAS_MAP[parameter.kind] || 'unknown';
   }
 
-  function buildDTSRefParameters(definition: OpenAPIV2.SchemaObject) {
-    const refParameters = buildType(definition);
+  function buildDTSRefParameters(def: OpenAPIV2.SchemaObject) {
+    const refParameters = buildType(def);
     return refParameters.map((p) => `  // ${p.description}\n  ${p.name}?: ${resolveDTSRefParameterKind(p)};`);
   }
 
@@ -133,7 +137,7 @@ export function buildDTSInterface(parameter: APIParameter, definitions: OpenAPIV
     const $refItem = $refs.shift();
     if (typeof $refItem?.flag !== 'string') return;
     const [name, $ref] = $refItem.flag.split('->');
-    const def = getDefinition($ref, definitions || {});
+    const def = getDef($ref);
     resultTypes.push({
       name,
       def,

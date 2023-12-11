@@ -4,50 +4,48 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Icon } from '@iconify/react';
-import { copy } from 'clipboard';
+import copy from 'clipboardy';
 import { sortBy } from 'lodash';
 import { useParams } from 'next/navigation';
-import { OpenAPIV2 } from 'openapi-types';
 import { useMemo, useState } from 'react';
 import { APIParameterList } from './api-list-item-parameters';
+import Code from './code';
 import { APIParameter } from './typing';
+import { buildDTS } from './utils/schema/format';
 import { buildRequest } from './utils/schema/request';
 import { buildResponse } from './utils/schema/response';
-import Code from './code';
-import { buildDTS } from './utils/schema/format';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
-  definitions: OpenAPIV2.Document['definitions'];
 };
 
-export function APIListItem({ data, definitions }: APIListItemProps) {
+export function APIListItem({ data }: APIListItemProps) {
   const { module } = useParams<{ module: string }>();
   const { toast } = useToast();
 
   const requestParameters = useMemo<APIParameter[]>(() => {
-    if (!data.parameters || !definitions) return [];
-    const test = buildRequest(data.parameters, definitions);
+    if (!data.parameters) return [];
+    const test = buildRequest(data.parameters);
     return sortBy(test, 'in');
-  }, [data.parameters, definitions]);
+  }, [data.parameters]);
 
   const responseParameters = useMemo<APIParameter[]>(() => {
-    const response = buildResponse(data.method, data.path, data.responses, definitions);
+    const response = buildResponse(data.method, data.path, data.responses);
     return response;
-  }, [data.method, data.path, data.responses, definitions]);
+  }, [data.method, data.path, data.responses]);
 
-  function handleCopyURL() {
+  async function handleCopyURL() {
     try {
       const copyPath = `\`/${module}${data.path
         .replace('{organizationId}', '{getCurrentOrganizationId()}')
         .replace(/\{([^\}]+)\}/g, (value) => {
           return `$${value}`;
         })}\``;
-      copy(copyPath);
+      await copy.write(copyPath);
       toast({
         title: '可以的，复制成功了',
         description: '检查下剪贴板吧。',
@@ -62,16 +60,32 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
   }
   const [code, setCode] = useState('');
 
-  function handleGenerateRequestDTS(e: React.MouseEvent) {
-    const code = buildDTS(requestParameters, definitions);
+  function handleGenerateRequestDTS() {
+    const code = buildDTS(requestParameters);
     setCode(code);
-    console.log({ data, requestParameters, definitions, code });
+    console.log({ data, requestParameters, code });
   }
 
-  function handleGenerateResponseDTS(e: React.MouseEvent) {
-    const code = buildDTS(responseParameters, definitions);
+  function handleGenerateResponseDTS() {
+    const code = buildDTS(responseParameters);
     setCode(code);
-    console.log({ data, responseParameters, definitions, code });
+    console.log({ data, responseParameters, code });
+  }
+
+  async function handleCopyCode() {
+    try {
+      await copy.write(code);
+      toast({
+        title: '可以的，复制成功了',
+        description: '检查下剪贴板吧。',
+      });
+    } catch {
+      toast({
+        title: '复制失败了',
+        description: '也许有点兼容性问题。',
+        variant: 'destructive',
+      });
+    }
   }
 
   return (
@@ -124,6 +138,11 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                   <ScrollArea className='max-h-[60vh] border rounded-lg shadow-sm'>
                     <Code code={code} />
                   </ScrollArea>
+                  <Button
+                    variant='outline'
+                    onClick={handleCopyCode}>
+                    copy
+                  </Button>
                 </DialogContent>
               </Dialog>
             )}
@@ -148,6 +167,11 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
                 <ScrollArea className='max-h-[60vh] border rounded-lg shadow-sm'>
                   <Code code={code} />
                 </ScrollArea>
+                <Button
+                  variant='outline'
+                  onClick={handleCopyCode}>
+                  copy
+                </Button>
               </DialogContent>
             </Dialog>
           </div>
@@ -168,14 +192,12 @@ export function APIListItem({ data, definitions }: APIListItemProps) {
               <TabsContent value='request'>
                 <APIParameterList
                   data={requestParameters}
-                  definitions={definitions}
                   firstLayer
                 />
               </TabsContent>
               <TabsContent value='response'>
                 <APIParameterList
                   data={responseParameters}
-                  definitions={definitions}
                   firstLayer
                 />
               </TabsContent>

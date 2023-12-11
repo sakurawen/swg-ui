@@ -1,16 +1,16 @@
 'use client';
+import { defsAtom } from '@/app/atoms/def';
 import { TriangleRightIcon } from '@radix-ui/react-icons';
 import cx, { clsx } from 'clsx';
+import { useAtomValue } from 'jotai';
 import { isNil, upperFirst } from 'lodash';
-import { OpenAPIV2 } from 'openapi-types';
 import { useMemo, useState } from 'react';
 import { Tooltip } from '../tooltip';
 import { APIParameter } from './typing';
-import { KIND_ALIAS_MAP, buildType, getDefinition } from './utils/schema/format';
+import { KIND_ALIAS_MAP, buildType, getDef } from './utils/schema/format';
 
 interface APIParameterListProps {
   data?: APIParameter[];
-  definitions: OpenAPIV2.DefinitionsObject | undefined;
   required?: string[];
   firstLayer?: boolean;
 }
@@ -19,7 +19,7 @@ interface APIParameterListProps {
  * 参数列表
  * @returns
  */
-export function APIParameterList({ data, definitions, required, firstLayer }: APIParameterListProps) {
+export function APIParameterList({ data, required, firstLayer }: APIParameterListProps) {
   if (!data) return null;
   if ((data?.length || 0) >= 200) {
     return <div className='pl-4'>参数过多不予展示</div>;
@@ -68,10 +68,7 @@ export function APIParameterList({ data, definitions, required, firstLayer }: AP
                 </div>
               </td>
               <td className='font-normal align-top'>
-                <Type
-                  parameter={p}
-                  definitions={definitions}
-                />
+                <Type parameter={p} />
               </td>
             </tr>
           );
@@ -81,16 +78,16 @@ export function APIParameterList({ data, definitions, required, firstLayer }: AP
   );
 }
 
-
-function Type(props: { parameter: APIParameter; definitions: OpenAPIV2.DefinitionsObject | undefined }) {
-  const { definitions } = props;
+function Type(props: { parameter: APIParameter }) {
+  const defs = useAtomValue(defsAtom);
   const [open, setOpen] = useState(false);
   const fieldName = upperFirst(props.parameter.name);
+  
   const [data, required] = useMemo(() => {
-    if (isNil(props.parameter.$ref) || isNil(definitions)) return [[], []];
-    const def = getDefinition(props.parameter.$ref, definitions);
+    if (isNil(props.parameter.$ref) || isNil(defs)) return [[], []];
+    const def = getDef(props.parameter.$ref);
     return [buildType(def), def.required];
-  }, [definitions, props.parameter.$ref]);
+  }, [defs, props.parameter.$ref]);
 
   if (data.length !== 0 || props.parameter.itemsTypeName) {
     return (
@@ -105,7 +102,6 @@ function Type(props: { parameter: APIParameter; definitions: OpenAPIV2.Definitio
           <APIParameterList
             required={required}
             data={data}
-            definitions={definitions}
           />
         ) : null}
       </>

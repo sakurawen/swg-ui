@@ -17,14 +17,16 @@ type NavbarProps = {
 
 export function Navbar(props: NavbarProps) {
   const { swaggerResources } = props;
+  
   const full = useAtomValue(
     selectAtom(
       settingAtom,
       useCallback((s) => s.full, [])
     )
   );
+
   const [setting, setSetting] = useAtom(settingAtom);
- 
+
   return (
     <div className='fixed z-10 w-full h-16 overflow-hidden backdrop-blur-lg bg-background/40'>
       <nav
@@ -36,7 +38,7 @@ export function Navbar(props: NavbarProps) {
           <span className='font-bold'>スワッガー・ユーアイ</span>
           <div className='point opacity-30 dark:opacity-60'></div>
         </div>
-        <div className='flex items-center space-x-4'>
+        <div className='flex items-center space-x-2'>
           <Command swaggerResources={swaggerResources} />
           <ModeToggle />
           <Button
@@ -48,9 +50,13 @@ export function Navbar(props: NavbarProps) {
                 };
               });
             }}
-            variant='outline'
+            variant='ghost'
             size='icon'>
-            {setting.full ? <ExitFullScreenIcon /> : <EnterFullScreenIcon />}
+            {setting.full ? (
+              <ExitFullScreenIcon className='w-[1.2rem] h-[1.2rem]' />
+            ) : (
+              <EnterFullScreenIcon className='w-[1.2rem] h-[1.2rem]' />
+            )}
           </Button>
         </div>
       </nav>

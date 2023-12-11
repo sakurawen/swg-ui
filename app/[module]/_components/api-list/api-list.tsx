@@ -9,11 +9,10 @@ import { Accordion } from '@/components/ui/accordion';
 
 type ApiListProps = {
   tags: OpenAPIV2.Document['tags'];
-  definitions: OpenAPIV2.Document['definitions'];
   currentTagName?: string;
 };
 
-export function APIList({ tags, currentTagName, definitions }: ApiListProps) {
+export function APIList({ tags, currentTagName }: ApiListProps) {
   const [apiRecord, apiPaths] = useMemo<[Record<string, CustomOperationObject[]>, string[]]>(() => {
     const menu = tags?.find((t) => t.name === currentTagName) as CustomTagObject;
     if (!menu) return [{}, []];
@@ -30,7 +29,6 @@ export function APIList({ tags, currentTagName, definitions }: ApiListProps) {
               return (
                 <APIListItem
                   data={api}
-                  definitions={definitions}
                   key={api.operationId}
                 />
               );

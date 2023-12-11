@@ -50,7 +50,10 @@ const firaCode = Fira_Code({
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en'>
+    <html
+      lang='en'
+      className='light'
+      style={{ colorScheme: 'light' }}>
       <body className={cx(harmonySans.className, 'min-h-screen', firaCode.variable)}>
         <JotaiProvider>
           <SWRConfigProvider>
@@ -65,7 +68,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Toaster />
         </JotaiProvider>
       </body>
-      <Script src="https://cdn.jsdelivr.net/npm/shiki"/>
+      <Script src='https://cdn.jsdelivr.net/npm/shiki' />
     </html>
   );
 }

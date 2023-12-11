@@ -1,5 +1,5 @@
-import { atomWithStorage, createJSONStorage } from 'jotai/utils';
-import {atomWithHash} from "jotai-location"
+import { atomWithHash } from 'jotai-location';
+import { atomWithStorage } from 'jotai/utils';
 import { OpenAPIV2 } from 'openapi-types';
 import { CustomOperationObject, CustomTagObject } from '../typing';
 
@@ -7,10 +7,9 @@ export const settingAtom = atomWithStorage('setting', {
   full: false,
 });
 
-export const currentSwaggerTagAtom = atomWithHash<string | undefined>(
-  'tag',
-  undefined,
-);
+export const currentSwaggerTagAtom = atomWithHash<string | undefined>('tag', undefined, {
+  setHash: 'replaceState',
+});
 
 function formatDocumentTagApi(
   path: string,

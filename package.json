@@ -23,10 +23,9 @@
     "@types/node": "20.10.4",
     "@types/react": "18.2.43",
     "@types/react-dom": "18.2.17",
-    "api-spec-converter": "^2.12.0",
     "autoprefixer": "10.4.16",
     "class-variance-authority": "^0.7.0",
-    "clipboard": "^2.0.11",
+    "clipboardy": "^4.0.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "eslint": "8.55.0",
@@ -50,7 +49,6 @@
   "devDependencies": {
     "@emotion/react": "^11.11.1",
     "@iconify/react": "^4.1.1",
-    "copy-webpack-plugin": "^11.0.0",
     "jotai-devtools": "^0.7.1",
     "openapi-types": "^12.1.3"
   }

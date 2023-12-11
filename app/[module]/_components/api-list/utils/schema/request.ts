@@ -1,9 +1,9 @@
 import { OpenAPIV2 } from 'openapi-types';
 import { APIParameter } from '../../typing';
-import { getDefinition, isReferenceObject, isSchemaObject } from './format';
+import { getDef, isReferenceObject, isSchemaObject } from './format';
 import { isItemsObject } from '../schema/format';
 
-export function buildRequest(input: OpenAPIV2.Parameters, definitions: OpenAPIV2.DefinitionsObject): APIParameter[] {
+export function buildRequest(input: OpenAPIV2.Parameters): APIParameter[] {
   const output: APIParameter[] = [];
   input.forEach((param) => {
     let type: APIParameter['type'] = 'unknown';
@@ -16,7 +16,7 @@ export function buildRequest(input: OpenAPIV2.Parameters, definitions: OpenAPIV2
       flag: 'noFlag',
     };
     if (isReferenceObject(param)) {
-      const definition = getDefinition(param.$ref, definitions);
+      const definition = getDef(param.$ref);
       console.log({ definition });
       base.flag = 'RefParam';
       throw new Error('todo;fixme');
