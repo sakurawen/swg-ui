@@ -47,22 +47,11 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
   }
-  /**
-    * Types that sugar-high have:
-    *
-    * identifier
-    * keyword
-    * string
-    * Class, number and null
-    * sign
-    * comment
-    * jsxliterals
-    */
 }
 
 @layer base {
   * {
-    @apply border-border selection:bg-foreground selection:text-background;
+    @apply border-border selection:bg-primary selection:text-background;
   }
   body {
     @apply bg-background text-foreground;

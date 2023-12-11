@@ -22,7 +22,7 @@ export function SideBar({ tags, onTagChange, selectTagName }: SidebarProps) {
                 <div
                   className={cx(
                     'transition-all text-base select-none py-2 text-foreground rounded-sm px-2.5',
-                    'hover:bg-foreground/10  hover:text-foreground dark:hover:bg-secondary-foreground/20 dark:hover:text-foreground',
+                    'hover:bg-primary-foreground  hover:text-foreground dark:hover:bg-primary-foreground dark:hover:text-foreground',
                     {
                       '!text-background !bg-primary ': tag.name === selectTagName,
                     }
