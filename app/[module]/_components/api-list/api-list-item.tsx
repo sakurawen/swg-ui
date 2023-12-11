@@ -29,9 +29,10 @@ export function APIListItem({ data }: APIListItemProps) {
 
   const requestParameters = useMemo<APIParameter[]>(() => {
     if (!data.parameters) return [];
-    const test = buildRequest(data.parameters);
-    return sortBy(test, 'in');
-  }, [data.parameters]);
+    const request = buildRequest(data.parameters).filter((i) => i.in !== 'path');
+    console.log({request})
+    return sortBy(request, 'in')
+  }, [data.parameters])
 
   const responseParameters = useMemo<APIParameter[]>(() => {
     const response = buildResponse(data.method, data.path, data.responses);
