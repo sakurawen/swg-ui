@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Icon } from '@iconify/react';
 import copy from 'clipboardy';
-import { sortBy } from 'lodash';
+import { camelCase, sortBy, upperCase, upperFirst } from 'lodash';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { APIParameterList } from './api-list-item-parameters';
@@ -30,9 +30,8 @@ export function APIListItem({ data }: APIListItemProps) {
   const requestParameters = useMemo<APIParameter[]>(() => {
     if (!data.parameters) return [];
     const request = buildRequest(data.parameters).filter((i) => i.in !== 'path');
-    console.log({request})
-    return sortBy(request, 'in')
-  }, [data.parameters])
+    return sortBy(request, 'in');
+  }, [data.parameters]);
 
   const responseParameters = useMemo<APIParameter[]>(() => {
     const response = buildResponse(data.method, data.path, data.responses);
@@ -62,9 +61,27 @@ export function APIListItem({ data }: APIListItemProps) {
   const [code, setCode] = useState('');
 
   function handleGenerateRequestDTS() {
-    const code = buildDTS(requestParameters);
-    setCode(code);
-    console.log({ data, requestParameters, code });
+    const bodyParameters = requestParameters.filter((p) => p.in === 'body');
+    const body = buildDTS(bodyParameters, true);
+    const queryParameters = requestParameters.filter((p) => p.in === 'query');
+    let requestParamsCode = '';
+    if (queryParameters.length !== 0) {
+      const rootQueryParameters: APIParameter[] = [
+        {
+          name:
+            upperFirst(data.method) + upperFirst(camelCase(data.path.replace('/v1/{organizationId}', ''))) + 'Params',
+          type: queryParameters,
+          kind: '__params',
+        },
+      ];
+      const query = buildDTS(rootQueryParameters, true);
+      requestParamsCode += '// query params\n' + query + '\n\n';
+    }
+    if (body.length !== 0) {
+      requestParamsCode += '// body params\n' + body;
+    }
+    setCode(requestParamsCode);
+    console.log({ data, requestParameters, requestParamsCode });
   }
 
   function handleGenerateResponseDTS() {
@@ -116,7 +133,7 @@ export function APIListItem({ data }: APIListItemProps) {
               />
               复制请求链接
             </Button>
-            {requestParameters.length >= 200 ? null : (
+            {requestParameters.length >= 200 || requestParameters.length === 0 ? null : (
               <Dialog
                 onOpenChange={(open) => {
                   if (!open) setCode('');

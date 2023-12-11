@@ -7,7 +7,7 @@ import { isNil, upperFirst } from 'lodash';
 import { useMemo, useState } from 'react';
 import { Tooltip } from '../tooltip';
 import { APIParameter } from './typing';
-import { KIND_ALIAS_MAP, buildType, getDef } from './utils/schema/format';
+import { FINAL_KIND_ALIAS_MAP, KIND_ALIAS_MAP, buildType, getDef } from './utils/schema/format';
 
 interface APIParameterListProps {
   data?: APIParameter[];
@@ -50,11 +50,7 @@ export function APIParameterList({ data, required, firstLayer }: APIParameterLis
                     </i>
                   ) : null}
                   <div className='inline-block'>
-                    <div
-                      onClick={() => {
-                        console.log(p);
-                      }}
-                      className='inline-block font-field-label font-bold text-sm max-w-1/2 text-ellipsis mr-2 '>
+                    <div className='inline-block font-field-label font-bold text-sm max-w-1/2 text-ellipsis mr-2 '>
                       {p.name}
                     </div>
                     <br />
@@ -82,14 +78,14 @@ function Type(props: { parameter: APIParameter }) {
   const defs = useAtomValue(defsAtom);
   const [open, setOpen] = useState(false);
   const fieldName = upperFirst(props.parameter.name);
-  
+
   const [data, required] = useMemo(() => {
     if (isNil(props.parameter.$ref) || isNil(defs)) return [[], []];
     const def = getDef(props.parameter.$ref);
-    return [buildType(def), def.required];
+    return [buildType(def, true), def.required];
   }, [defs, props.parameter.$ref]);
 
-  if (data.length !== 0 || props.parameter.itemsTypeName) {
+  if (data.length !== 0) {
     return (
       <>
         <div
@@ -107,17 +103,22 @@ function Type(props: { parameter: APIParameter }) {
       </>
     );
   }
+  let typeMap = KIND_ALIAS_MAP
+  let lowerName = props.parameter.name.toLowerCase()
+  if(lowerName.endsWith("id")||lowerName.endsWith("ids")){
+    typeMap = FINAL_KIND_ALIAS_MAP
+  }
 
   if (props?.parameter.kind === 'array' && typeof props.parameter.type === 'string') {
-    return <span className='font-fira-code'>Array{`<${KIND_ALIAS_MAP[props.parameter.type] || 'unknown'}>`}</span>;
+    return <span className='font-fira-code'>Array{`<${typeMap[props.parameter.type] || 'unknown'}>`}</span>;
   }
 
   if (props.parameter.kind !== 'object' && typeof props.parameter.type === 'string') {
-    return <span className='font-fira-code'>{KIND_ALIAS_MAP[props.parameter.kind]}</span>;
+    return <span className='font-fira-code'>{typeMap[props.parameter.kind]}</span>;
   }
 
-  if (KIND_ALIAS_MAP[props.parameter.kind]) {
-    return <span className='font-fira-code'>{KIND_ALIAS_MAP[props.parameter.kind]}</span>;
+  if (typeMap[props.parameter.kind]) {
+    return <span className='font-fira-code'>{typeMap[props.parameter.kind]}</span>;
   }
 
   return <span className='font-fira-code'>unknown</span>;

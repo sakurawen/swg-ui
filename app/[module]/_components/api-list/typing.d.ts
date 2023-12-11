@@ -6,7 +6,8 @@ export type APIParameter = {
   name: string;
   description?: string;
   type: string | APIParameter[];
-  kind: 'string' | 'integer' | 'number' | 'boolean' | 'array' | 'object';
+  // __params是构造dts的时候手动构建的数组类型
+  kind: 'string' | 'integer' | 'number' | 'boolean' | 'array' | 'object' | '__params';
   in?: string;
   required?: boolean;
   raw?: any;

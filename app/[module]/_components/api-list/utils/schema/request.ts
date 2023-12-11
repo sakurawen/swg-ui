@@ -39,6 +39,7 @@ export function buildRequest(input: OpenAPIV2.Parameters): APIParameter[] {
       kind = 'array';
       name = param.name;
       base.in = param.in;
+      base.required = param.required || false;
       base.flag += '-RefSchemaItemsParam';
       output.push({
         name,
@@ -52,6 +53,7 @@ export function buildRequest(input: OpenAPIV2.Parameters): APIParameter[] {
       kind = 'array';
       type = param.schema.items?.type || (param.schema.type as string) || 'unknown';
       base.in = param.in;
+      base.required = param.required || false;
       base.flag += '-RefItemsSchemaParam';
       output.push({
         name,
@@ -62,12 +64,14 @@ export function buildRequest(input: OpenAPIV2.Parameters): APIParameter[] {
     } else if (isReferenceObject(param.items)) {
       kind = 'array';
       base.flag += '-RefItemsParam';
+      base.required = param.required || false;
       throw new Error('todo;fixme');
     } else if (isItemsObject(param.items)) {
       name = param.name;
       kind = 'array';
       type = param.items?.type || 'unknown';
       base.flag += '-itemsParam';
+      base.required = param.required || false;
       base.in = param.in;
       output.push({
         name,

@@ -3,7 +3,7 @@ import { Navbar } from '@/app/_components/nav';
 import { PropsWithChildren, Suspense } from 'react';
 import { getSwaggerResource } from '@/app/service';
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 async function ModuleLayout({ children }: PropsWithChildren) {
   const resourceList = await getSwaggerResource();

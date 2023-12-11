@@ -12,7 +12,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
 export interface CommandProps {
@@ -20,8 +20,16 @@ export interface CommandProps {
 }
 export function Command(props: CommandProps) {
   const { swaggerResources } = props;
+
+  const pathname = usePathname();
+
+  const otherSwaggerResources = React.useMemo(() => {
+    return swaggerResources.filter((i) => !i.url.includes(pathname));
+  }, [pathname, swaggerResources]);
+
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
+
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'q' && (e.metaKey || e.ctrlKey)) {
@@ -58,10 +66,9 @@ export function Command(props: CommandProps) {
         <CommandList>
           <CommandEmpty>无了</CommandEmpty>
           <CommandGroup heading='Suggestions'>
-            {swaggerResources.map((r) => {
+            {otherSwaggerResources.map((r) => {
               return (
                 <CommandItem
-                  value={r.url}
                   key={r.name}
                   onSelect={() => handleSwitchModule(r.url)}>
                   <Link1Icon className='mr-2 h-4 w-4' />
