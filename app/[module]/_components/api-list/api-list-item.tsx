@@ -64,7 +64,20 @@ export function APIListItem({ data }: APIListItemProps) {
     const bodyParameters = requestParameters.filter((p) => p.in === 'body');
     const body = buildDTS(bodyParameters, true);
     const queryParameters = requestParameters.filter((p) => p.in === 'query');
+    const formDataParameters = requestParameters.filter((p) => p.in === 'formData');
     let requestParamsCode = '';
+    if(formDataParameters.length!==0){
+      const rootQueryParameters: APIParameter[] = [
+        {
+          name:
+            upperFirst(data.method) + upperFirst(camelCase(data.path.replace('/v1/{organizationId}', ''))) + 'FormData',
+          type: formDataParameters,
+          kind: '__params',
+        },
+      ];
+      const query = buildDTS(rootQueryParameters, true);
+      requestParamsCode += '// formData params\n' + query + '\n\n';
+    }
     if (queryParameters.length !== 0) {
       const rootQueryParameters: APIParameter[] = [
         {

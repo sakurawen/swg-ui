@@ -74,6 +74,7 @@ export const KIND_ALIAS_MAP = {
   number: 'number',
   string: 'string',
   boolean: 'boolean',
+  file:'File',
   object: 'Record<string,any>',
 } as Record<string, string>;
 
@@ -85,6 +86,7 @@ export const FINAL_KIND_ALIAS_MAP = {
   number: 'string',
   string: 'string',
   boolean: 'boolean',
+  file:'File',
   object: 'Record<string,any>',
 } as Record<string, string>;
 
