@@ -1,6 +1,6 @@
 import { isNil, isString, upperFirst } from 'lodash';
 import { OpenAPIV2 } from 'openapi-types';
-import { APIParameter } from '../../typing';
+import { APIParameter } from '@/app/[module]/_components/api-list/typing';
 import { getDefaultStore } from 'jotai';
 import { defsAtom } from '@/app/atoms/def';
 const store = getDefaultStore();
@@ -74,7 +74,7 @@ export const KIND_ALIAS_MAP = {
   number: 'number',
   string: 'string',
   boolean: 'boolean',
-  file:'File',
+  file: 'File',
   object: 'Record<string,any>',
 } as Record<string, string>;
 
@@ -86,7 +86,7 @@ export const FINAL_KIND_ALIAS_MAP = {
   number: 'string',
   string: 'string',
   boolean: 'boolean',
-  file:'File',
+  file: 'File',
   object: 'Record<string,any>',
 } as Record<string, string>;
 
@@ -102,7 +102,9 @@ export function buildDTS(parameters: APIParameter[], useRequired: boolean = fals
 export function buildDTSType(parameter: APIParameter, useRequired: boolean) {
   if (parameter.kind === '__params' && Array.isArray(parameter.type)) {
     const parameters = parameter.type.map((p) => {
-      return `  // ${p.description}\n  ${p.name}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`;
+      return `  /**
+   * ${p.description}
+   */\n  ${p.name}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`;
     });
     return `interface ${parameter.name} {
 ${parameters.join('\n')}
@@ -150,7 +152,9 @@ ${parameters.join('\n')}
   function buildDTSRefParameters(def: OpenAPIV2.SchemaObject, useRequired: boolean) {
     const refParameters = buildType(def, useRequired);
     return refParameters.map(
-      (p) => `  // ${p.description}\n  ${p.name}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`
+      (p) => `  /**
+   * ${p.description}
+   */\n  ${p.name}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`
     );
   }
 

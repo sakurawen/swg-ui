@@ -13,11 +13,11 @@ import { camelCase, sortBy, upperCase, upperFirst } from 'lodash';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { APIParameterList } from './api-list-item-parameters';
-import {Code} from '@/app/_components/code';
+import { Code } from '@/app/_components/code';
 import { APIParameter } from './typing';
-import { buildDTS } from './utils/schema/format';
-import { buildRequest } from './utils/schema/request';
-import { buildResponse } from './utils/schema/response';
+import { buildDTS } from '@/app/_utils/schema/format';
+import { buildRequest } from '@/app/_utils/schema/request';
+import { buildResponse } from '@/app/_utils/schema/response';
 
 export type APIListItemProps = {
   data: CustomOperationObject;
@@ -66,8 +66,8 @@ export function APIListItem({ data }: APIListItemProps) {
     const queryParameters = requestParameters.filter((p) => p.in === 'query');
     const formDataParameters = requestParameters.filter((p) => p.in === 'formData');
     let requestParamsCode = '';
-    if(formDataParameters.length!==0){
-      const rootQueryParameters: APIParameter[] = [
+    if (formDataParameters.length !== 0) {
+      const rootFormDataParameters: APIParameter[] = [
         {
           name:
             upperFirst(data.method) + upperFirst(camelCase(data.path.replace('/v1/{organizationId}', ''))) + 'FormData',
@@ -75,8 +75,8 @@ export function APIListItem({ data }: APIListItemProps) {
           kind: '__params',
         },
       ];
-      const query = buildDTS(rootQueryParameters, true);
-      requestParamsCode += '// formData params\n' + query + '\n\n';
+      const formData = buildDTS(rootFormDataParameters, true);
+      requestParamsCode += '// formData params\n' + formData + '\n\n';
     }
     if (queryParameters.length !== 0) {
       const rootQueryParameters: APIParameter[] = [
@@ -88,7 +88,7 @@ export function APIListItem({ data }: APIListItemProps) {
         },
       ];
       const query = buildDTS(rootQueryParameters, true);
-      requestParamsCode += '// query params\n' + query + '\n\n';
+      requestParamsCode += `// query params \n` + query + `\n\n`;
     }
     if (body.length !== 0) {
       requestParamsCode += '// body params\n' + body;

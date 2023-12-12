@@ -7,7 +7,7 @@ import { isNil, upperFirst } from 'lodash';
 import { useMemo, useState } from 'react';
 import { Tooltip } from '../tooltip';
 import { APIParameter } from './typing';
-import { FINAL_KIND_ALIAS_MAP, KIND_ALIAS_MAP, buildType, getDef } from './utils/schema/format';
+import { FINAL_KIND_ALIAS_MAP, KIND_ALIAS_MAP, buildType, getDef } from '@/app/_utils/schema/format';
 
 interface APIParameterListProps {
   data?: APIParameter[];
@@ -103,10 +103,10 @@ function Type(props: { parameter: APIParameter }) {
       </>
     );
   }
-  let typeMap = KIND_ALIAS_MAP
-  let lowerName = props.parameter.name.toLowerCase()
-  if(lowerName.endsWith("id")||lowerName.endsWith("ids")){
-    typeMap = FINAL_KIND_ALIAS_MAP
+  let typeMap = KIND_ALIAS_MAP;
+  let lowerName = props.parameter.name.toLowerCase();
+  if (lowerName.endsWith('id') || lowerName.endsWith('ids')) {
+    typeMap = FINAL_KIND_ALIAS_MAP;
   }
 
   if (props?.parameter.kind === 'array' && typeof props.parameter.type === 'string') {
