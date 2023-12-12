@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Icon } from '@iconify/react';
-import copy from 'clipboardy';
+import copy from 'copy-to-clipboard';
 import { camelCase, sortBy, upperCase, upperFirst } from 'lodash';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -45,7 +45,7 @@ export function APIListItem({ data }: APIListItemProps) {
         .replace(/\{([^\}]+)\}/g, (value) => {
           return `$${value}`;
         })}\``;
-      await copy.write(copyPath);
+      await copy(copyPath);
       toast({
         title: '可以的，复制成功了',
         description: '检查下剪贴板吧。',
@@ -92,7 +92,7 @@ export function APIListItem({ data }: APIListItemProps) {
 
   async function handleCopyCode() {
     try {
-      await copy.write(code);
+      await copy(code);
       toast({
         title: '可以的，复制成功了',
         description: '检查下剪贴板吧。',

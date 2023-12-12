@@ -17,7 +17,6 @@ type NavbarProps = {
 
 export function Navbar(props: NavbarProps) {
   const { swaggerResources } = props;
-  
   const full = useAtomValue(
     selectAtom(
       settingAtom,

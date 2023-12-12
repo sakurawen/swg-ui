@@ -6,8 +6,8 @@ export async function getSwaggerResource(): Promise<SwaggerResource[]> {
   try {
     const swgResource = await fetch(
       process.env.NODE_ENV === 'production'
-        ? 'https://swg.akumanoko.com/api/swagger/resource'
-        : `http://localhost:3000/api/swagger/resource`
+        ? `${process.env.NEXT_PUBLIC_ONLINE_URL}/api/swagger/resource`
+        : `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/swagger/resource`
     );
     return swgResource.json();
   } catch (err) {
@@ -17,14 +17,19 @@ export async function getSwaggerResource(): Promise<SwaggerResource[]> {
 }
 
 export async function getSwaggerModuleData(module: string, version: string): Promise<OpenAPIV2.Document> {
-  const res = await fetch(`http://localhost:3000/api/swagger/module`, {
-    cache: 'no-store',
-    method: 'post',
-    body: JSON.stringify({
-      module,
-      version,
-    }),
-  });
+  const res = await fetch(
+    process.env.NODE_ENV === 'production'
+      ? `${process.env.NEXT_PUBLIC_ONLINE_URL}/api/swagger/module`
+      : `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/swagger/module`,
+    {
+      cache: 'no-store',
+      method: 'post',
+      body: JSON.stringify({
+        module,
+        version,
+      }),
+    }
+  );
   const document: OpenAPIV2.Document = await res.json();
   formatDocument(document);
   return document;
