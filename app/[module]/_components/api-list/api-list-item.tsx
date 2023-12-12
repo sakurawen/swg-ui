@@ -13,7 +13,7 @@ import { camelCase, sortBy, upperCase, upperFirst } from 'lodash';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { APIParameterList } from './api-list-item-parameters';
-import Code from './code';
+import {Code} from '@/app/_components/code';
 import { APIParameter } from './typing';
 import { buildDTS } from './utils/schema/format';
 import { buildRequest } from './utils/schema/request';

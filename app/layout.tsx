@@ -8,7 +8,6 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { NextThemeProvider } from '@/app/_components/theme-provider';
 import { SWRConfigProvider } from '@/app/_components/swr-provider';
-import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'スワッガー・ユーアイ',
@@ -68,7 +67,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Toaster />
         </JotaiProvider>
       </body>
-      <Script src='https://cdn.jsdelivr.net/npm/shiki' />
     </html>
   );
 }
