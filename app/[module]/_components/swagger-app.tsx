@@ -1,15 +1,12 @@
 'use client';
 import { Loading } from '@/app/_components/app-loading';
-import { currentSwaggerTagAtom, settingAtom } from '@/app/atoms/setting';
+import { defsAtom } from '@/app/atoms/def';
+import { currentSwaggerTagAtom } from '@/app/atoms/setting';
 import { getSwaggerModuleData } from '@/app/service';
-import cx from 'clsx';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { selectAtom } from 'jotai/utils';
-import { useCallback } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
 import useSWR from 'swr';
 import { BlockList } from './block-list';
 import { SideBar } from './side-bar';
-import { defsAtom } from '@/app/atoms/def';
 
 type SwaggerAppProps = {
   module: string;
@@ -20,13 +17,6 @@ export function SwaggerApp(props: SwaggerAppProps) {
   const { module, version } = props;
   const [currentTagName, setCurrentTagName] = useAtom(currentSwaggerTagAtom);
   const setDefs = useSetAtom(defsAtom);
-
-  const full = useAtomValue(
-    selectAtom(
-      settingAtom,
-      useCallback((s) => s.full, [])
-    )
-  );
 
   const { data: document, isLoading } = useSWR(
     [module, version],
@@ -46,7 +36,7 @@ export function SwaggerApp(props: SwaggerAppProps) {
   if (isLoading || !document) return <Loading />;
 
   return (
-    <div className={cx('flex overflow-hidden  mx-auto', full ? 'w-full' : 'max-w-7xl')}>
+    <div className='flex overflow-hidden  mx-auto w-full'>
       <SideBar
         tags={document?.tags}
         selectTagName={currentTagName}

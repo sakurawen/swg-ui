@@ -1,6 +1,6 @@
 import { isNil, isString, upperFirst } from 'lodash';
 import { OpenAPIV2 } from 'openapi-types';
-import { APIParameter } from '@/app/[module]/_components/api-list/typing';
+import { APIParameter } from '@/app/[module]/_components/block-list/typing';
 import { getDefaultStore } from 'jotai';
 import { defsAtom } from '@/app/atoms/def';
 const store = getDefaultStore();
@@ -102,9 +102,10 @@ export function buildDTS(parameters: APIParameter[], useRequired: boolean = fals
 export function buildDTSType(parameter: APIParameter, useRequired: boolean) {
   if (parameter.kind === '__params' && Array.isArray(parameter.type)) {
     const parameters = parameter.type.map((p) => {
+      const safeName = p.name.includes("[")?`'${p.name}'`:p.name
       return `  /**
    * ${p.description}
-   */\n  ${p.name}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`;
+   */\n  ${safeName}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`;
     });
     return `interface ${parameter.name} {
 ${parameters.join('\n')}
@@ -151,11 +152,12 @@ ${parameters.join('\n')}
 
   function buildDTSRefParameters(def: OpenAPIV2.SchemaObject, useRequired: boolean) {
     const refParameters = buildType(def, useRequired);
-    return refParameters.map(
-      (p) => `  /**
+    return refParameters.map((p) => {
+      const safeName = p.name.includes("[")?`'${p.name}'`:p.name
+      return `  /**
    * ${p.description}
-   */\n  ${p.name}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`
-    );
+   */\n  ${safeName}${p.required ? '' : '?'}: ${resolveDTSRefParameterKind(p)};`;
+    });
   }
 
   const $refSet = new Set<string>([getRefFlag(parameter)]);

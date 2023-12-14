@@ -23,7 +23,7 @@ export function BlockList({ tags, currentTagName }: BlockListProps) {
   return (
     <ScrollArea className='h-[100vh] pb-2'>
       <div className='space-y-2 mt-16'>
-        <Accordion type='multiple'>
+        <Accordion  type='multiple'>
           {apiPaths.map((path) => {
             return apiRecord?.[path].map((api) => {
               return (
