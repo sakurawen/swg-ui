@@ -7,7 +7,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { selectAtom } from 'jotai/utils';
 import { useCallback } from 'react';
 import useSWR from 'swr';
-import { APIList } from './api-list';
+import { BlockList } from './block-list';
 import { SideBar } from './side-bar';
 import { defsAtom } from '@/app/atoms/def';
 
@@ -53,7 +53,7 @@ export function SwaggerApp(props: SwaggerAppProps) {
         onTagChange={(tag) => setCurrentTagName(tag.name)}
       />
       <div className='flex-1 h-full px-1'>
-        <APIList
+        <BlockList
           tags={document?.tags}
           currentTagName={currentTagName}
         />

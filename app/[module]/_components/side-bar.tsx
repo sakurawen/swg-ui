@@ -11,7 +11,7 @@ type SidebarProps = {
 export function SideBar({ tags, onTagChange, selectTagName }: SidebarProps) {
   return (
     <menu className='px-1 flex-shrink-0'>
-      <ScrollArea className='h-[calc(100vh-64px)] mt-16 pb-1'>
+      <ScrollArea className='h-[calc(100vh-64px)] min-w-[20em] mt-16 pb-1'>
         <ul className='pt-1'>
           {tags?.map((tag) => {
             return (
@@ -21,10 +21,10 @@ export function SideBar({ tags, onTagChange, selectTagName }: SidebarProps) {
                 onClick={() => onTagChange?.(tag)}>
                 <div
                   className={cx(
-                    'transition-all text-base select-none py-2 text-foreground rounded-sm px-2.5',
+                    'transition-all text-base select-none py-2 text-foreground rounded px-2.5',
                     'hover:bg-primary-foreground  hover:text-foreground dark:hover:bg-primary-foreground dark:hover:text-foreground',
                     {
-                      '!text-background !bg-primary ': tag.name === selectTagName,
+                      '!text-background !bg-primary shadow': tag.name === selectTagName,
                     }
                   )}>
                   <span className='font-normal'>{tag.description}</span>

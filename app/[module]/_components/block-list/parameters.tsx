@@ -9,7 +9,7 @@ import { Tooltip } from '../tooltip';
 import { APIParameter } from './typing';
 import { FINAL_KIND_ALIAS_MAP, KIND_ALIAS_MAP, buildType, getDef } from '@/app/_utils/schema/format';
 
-interface APIParameterListProps {
+interface ParametersProps {
   data?: APIParameter[];
   required?: string[];
   firstLayer?: boolean;
@@ -19,7 +19,7 @@ interface APIParameterListProps {
  * 参数列表
  * @returns
  */
-export function APIParameterList({ data, required, firstLayer }: APIParameterListProps) {
+export function Parameters({ data, required, firstLayer }: ParametersProps) {
   if (!data) return null;
   if ((data?.length || 0) >= 200) {
     return <div className='pl-4'>参数过多不予展示</div>;
@@ -38,7 +38,7 @@ export function APIParameterList({ data, required, firstLayer }: APIParameterLis
           return (
             <tr
               key={p.name}
-              className='mb-1.5'>
+             >
               <td className='text-sm pr-6 align-top'>
                 <div className='flex items-start'>
                   {firstLayer ? (
@@ -64,7 +64,7 @@ export function APIParameterList({ data, required, firstLayer }: APIParameterLis
                 </div>
               </td>
               <td className='font-normal align-top'>
-                <Type parameter={p} />
+                <ParameterType parameter={p} />
               </td>
             </tr>
           );
@@ -74,7 +74,7 @@ export function APIParameterList({ data, required, firstLayer }: APIParameterLis
   );
 }
 
-function Type(props: { parameter: APIParameter }) {
+function ParameterType(props: { parameter: APIParameter }) {
   const defs = useAtomValue(defsAtom);
   const [open, setOpen] = useState(false);
   const fieldName = upperFirst(props.parameter.name);
@@ -95,7 +95,7 @@ function Type(props: { parameter: APIParameter }) {
           <TriangleRightIcon className={open ? 'transition w-5 h-5 rotate-90' : 'transition w-5 h-5'} />
         </div>
         {open ? (
-          <APIParameterList
+          <Parameters
             required={required}
             data={data}
           />

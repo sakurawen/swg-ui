@@ -12,18 +12,18 @@ import copy from 'copy-to-clipboard';
 import { camelCase, sortBy, upperCase, upperFirst } from 'lodash';
 import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { APIParameterList } from './api-list-item-parameters';
+import { Parameters } from './parameters';
 import { Code } from '@/app/_components/code';
 import { APIParameter } from './typing';
 import { buildDTS } from '@/app/_utils/schema/format';
 import { buildRequest } from '@/app/_utils/schema/request';
 import { buildResponse } from '@/app/_utils/schema/response';
 
-export type APIListItemProps = {
+export type BlockSection = {
   data: CustomOperationObject;
 };
 
-export function APIListItem({ data }: APIListItemProps) {
+export function BlockSection({ data }: BlockSection) {
   const { module } = useParams<{ module: string }>();
   const { toast } = useToast();
 
@@ -221,13 +221,13 @@ export function APIListItem({ data }: APIListItemProps) {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value='request'>
-                <APIParameterList
+                <Parameters
                   data={requestParameters}
                   firstLayer
                 />
               </TabsContent>
               <TabsContent value='response'>
-                <APIParameterList
+                <Parameters
                   data={responseParameters}
                   firstLayer
                 />

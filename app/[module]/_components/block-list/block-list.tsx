@@ -3,16 +3,16 @@ import { CustomOperationObject, CustomTagObject } from '@/app/typing';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { OpenAPIV2 } from 'openapi-types';
 import { useMemo } from 'react';
-import { APIListItem } from './api-list-item';
+import { BlockSection } from './block-section';
 import { Accordion } from '@/components/ui/accordion';
 
 
-type ApiListProps = {
+type BlockListProps = {
   tags: OpenAPIV2.Document['tags'];
   currentTagName?: string;
 };
 
-export function APIList({ tags, currentTagName }: ApiListProps) {
+export function BlockList({ tags, currentTagName }: BlockListProps) {
   const [apiRecord, apiPaths] = useMemo<[Record<string, CustomOperationObject[]>, string[]]>(() => {
     const menu = tags?.find((t) => t.name === currentTagName) as CustomTagObject;
     if (!menu) return [{}, []];
@@ -27,7 +27,7 @@ export function APIList({ tags, currentTagName }: ApiListProps) {
           {apiPaths.map((path) => {
             return apiRecord?.[path].map((api) => {
               return (
-                <APIListItem
+                <BlockSection
                   data={api}
                   key={api.operationId}
                 />
