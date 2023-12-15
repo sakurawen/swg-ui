@@ -1,6 +1,6 @@
 import { camelCase, isNil, upperFirst } from 'lodash';
 import { OpenAPIV2 } from 'openapi-types';
-import { APIParameter } from '@/app/[module]/_components/api-list/typing';
+import { APIParameter } from '@/app/[module]/_components/block-list/typing';
 import { isReferenceObject } from './format';
 
 export function buildResponse(

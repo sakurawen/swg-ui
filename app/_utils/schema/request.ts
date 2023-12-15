@@ -1,5 +1,5 @@
 import { OpenAPIV2 } from 'openapi-types';
-import { APIParameter } from '@/app/[module]/_components/api-list/typing';
+import { APIParameter } from '@/app/[module]/_components/block-list/typing';
 import { getDef, isReferenceObject, isSchemaObject } from './format';
 import { isItemsObject } from '../schema/format';
 
