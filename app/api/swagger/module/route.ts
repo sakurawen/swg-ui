@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   const { version, module } = body;
   const path = `docs/${module}?version=${version}`;
   const reqUrl = `${process.env.API_URL}/swagger/${path}`;
-  const res = await fetch(reqUrl, { cache: 'no-store' });
+  const res = await fetch(reqUrl, { cache: 'no-cache' });
   const document: OpenAPIV2.Document = await res.json();
   return Response.json(document);
 }

@@ -7,7 +7,8 @@ export async function getSwaggerResource(): Promise<SwaggerResource[]> {
     const swgResource = await fetch(
       process.env.NODE_ENV === 'production'
         ? `${process.env.NEXT_PUBLIC_ONLINE_URL}/api/swagger/resource`
-        : `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/swagger/resource`
+        : `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/swagger/resource`,
+      { cache: 'no-cache' }
     );
     return swgResource.json();
   } catch (err) {

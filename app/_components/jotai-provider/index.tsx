@@ -1,12 +1,11 @@
 'use client';
-import { Provider, getDefaultStore } from 'jotai';
-import { PropsWithChildren } from 'react';
+import { Provider } from 'jotai';
 import { DevTools } from 'jotai-devtools';
+import { PropsWithChildren } from 'react';
 
-const defaultStore = getDefaultStore();
 export function JotaiProvider({ children }: PropsWithChildren) {
   return (
-    <Provider store={defaultStore}>
+    <Provider>
       <DevTools />
       {children}
     </Provider>

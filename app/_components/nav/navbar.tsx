@@ -10,7 +10,6 @@ type NavbarProps = {
 
 export function Navbar(props: NavbarProps) {
   const { swaggerResources } = props;
-
   return (
     <div className='fixed z-10 w-full h-16 overflow-hidden backdrop-blur-lg bg-background/40'>
       <nav className='h-full w-full mx-auto flex  justify-between items-center px-2.5 border-b'>
