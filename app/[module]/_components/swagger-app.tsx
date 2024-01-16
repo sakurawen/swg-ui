@@ -34,7 +34,6 @@ export function SwaggerApp(props: SwaggerAppProps) {
   );
 
   if (isLoading || !document) return <Loading />;
-
   return (
     <div className='flex overflow-hidden  mx-auto w-full'>
       <SideBar

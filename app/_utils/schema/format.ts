@@ -3,6 +3,7 @@ import { OpenAPIV2 } from 'openapi-types';
 import { APIParameter } from '@/app/[module]/_components/block-list/typing';
 import { getDefaultStore } from 'jotai';
 import { defsAtom } from '@/app/atoms/def';
+
 const store = getDefaultStore();
 
 export function isReferenceObject(obj?: any): obj is OpenAPIV2.ReferenceObject {

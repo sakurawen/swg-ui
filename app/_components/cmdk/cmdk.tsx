@@ -21,11 +21,6 @@ export interface CommandProps {
 export function Command(props: CommandProps) {
   const { swaggerResources } = props;
 
-  const pathname = usePathname();
-
-  const otherSwaggerResources = React.useMemo(() => {
-    return swaggerResources.filter((i) => !i.url.includes(pathname));
-  }, [pathname, swaggerResources]);
 
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
@@ -66,7 +61,7 @@ export function Command(props: CommandProps) {
         <CommandList>
           <CommandEmpty>无了</CommandEmpty>
           <CommandGroup heading='Suggestions'>
-            {otherSwaggerResources.map((r) => {
+            {swaggerResources.map((r) => {
               return (
                 <CommandItem
                   key={r.name}
