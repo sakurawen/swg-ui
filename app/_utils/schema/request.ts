@@ -50,7 +50,13 @@ export function buildRequest(input: OpenAPIV2.Parameters): APIParameter[] {
       });
     } else if (isSchemaObject(param.schema) && !isReferenceObject(param.schema.items)) {
       name = param.name;
+      // if(!Array.isArray(param.schema.type)){
+      //   kind = param.schema.type as APIParameter['kind'] ||"unknown" 
+      // }else{
+      //   kind = 'array';
+      // }
       kind = 'array';
+
       type = param.schema.items?.type || (param.schema.type as string) || 'unknown';
       base.in = param.in;
       base.required = param.required || false;

@@ -61,6 +61,7 @@ export function BlockSection({ data }: BlockSection) {
   const [code, setCode] = useState('');
 
   function handleGenerateRequestDTS() {
+    console.log({data})
     const bodyParameters = requestParameters.filter((p) => p.in === 'body');
     const body = buildDTS(bodyParameters, true);
     const queryParameters = requestParameters.filter((p) => p.in === 'query');
